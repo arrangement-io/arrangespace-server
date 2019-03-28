@@ -23,6 +23,13 @@ exports.getArrangement = function (request, response) {
 
   api.getArrangement(arrangementId, request).then(results => {
     response.set('Content-Type', 'text/plain');
-    response.status(200).send(JSON.stringify(results));
+    if (results) {
+      response.status(200).send(JSON.stringify(results));
+    } else {
+      let results = {
+        'arrangement': 'no arrangement found'
+      };
+      response.status(404).send(JSON.stringify(results));
+    }
   });
 };
