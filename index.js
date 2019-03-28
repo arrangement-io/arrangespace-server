@@ -14,13 +14,7 @@ app.use(authMiddleware);
 // Import routes here
 require('./routes/session_routes')(app);
 require('./routes/user_routes')(app);
-
-app.get('/', (req, res) => {
-  res.set('Content-Type', 'text/html');
-  res.status(200).send(`
-    <h1>Welcome!</h1>
-  `);
-});
+require('./routes/arrangement_routes')(app);
 
 let db = require('./db/database_mongo');
 
