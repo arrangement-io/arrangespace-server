@@ -9,13 +9,9 @@ exports.getUsers = function (request) {
 };
 
 exports.getUser = function (userId, request) {
-  // TODO: Make DB call
-  let response = {
-    user: 'David Wosk',
-    user_id: userId
-  };
-
   return new Promise(resolve => {
-    resolve(response);
+    db.getUser(userId, request).then(results => {
+      resolve(results);
+    });
   });
 };

@@ -1,4 +1,5 @@
 var MongoClient = require('mongodb').MongoClient;
+var ObjectId = require('mongodb').ObjectId;
 let User = null;
 let Arrangement = null;
 
@@ -13,8 +14,16 @@ exports.connect = async function (uri) {
   }
 };
 
-exports.createUser = function (user) {
-  // TODO: Make DB call
+exports.getUser = function (userId, user) {
+  try {
+    return new Promise(resolve => {
+      User.findOne({ '_id': ObjectId(userId) }, function (err, user) {
+        resolve(user);
+      });
+    });
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 exports.getUsers = function (model, request) {
