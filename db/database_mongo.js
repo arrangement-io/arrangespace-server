@@ -14,10 +14,30 @@ exports.connect = async function (uri) {
   }
 };
 
-exports.getUser = function (userId, user) {
+exports.createUser = function (user) {
+  let googleId = user.googleId;
+
+  try {
+    return new Promise(resolve => {
+      User.updateOne({ 'googleId': googleId }, { $set: user }, function (err, user) {
+        if (err) {
+          console.log(err.stack);
+        };
+        resolve(user);
+      });
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.getUser = function (userId, request) {
   try {
     return new Promise(resolve => {
       User.findOne({ '_id': ObjectId(userId) }, function (err, user) {
+        if (err) {
+          console.log(err.stack);
+        };
         resolve(user);
       });
     });
@@ -30,6 +50,9 @@ exports.getUsers = function (model, request) {
   try {
     return new Promise(resolve => {
       User.find({}).toArray(function (err, docs) {
+        if (err) {
+          console.log(err.stack);
+        };
         resolve(docs);
       });
     });

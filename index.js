@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const authMiddleware = require('./utils/auth');
 
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(express.json());
 
 // add some security-related headers to the response
 app.use(helmet());

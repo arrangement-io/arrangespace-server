@@ -1,7 +1,9 @@
 let api = require('../api/session_api');
 
 exports.logIn = function (request, response) {
-  api.logIn(request).then(results => {
+  let user = request.body;
+
+  api.logIn(user).then(results => {
     response.set('Content-Type', 'text/plain');
     response.status(200).send(JSON.stringify(results));
   });
