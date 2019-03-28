@@ -27,8 +27,8 @@ let db = require('./db/database_mongo');
 const port = process.env.PORT || 3000;
 app.listen(port, function () {
   console.log(`Server listening on port ${port}!`);
-  // TODO: Connect to DB
-  db.connect('127.0.0.1', '', 'my_database');
+  let mongoUri = process.env.MONGODB_URI;
+  db.connect(mongoUri);
 });
 
 module.exports = app;

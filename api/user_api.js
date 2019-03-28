@@ -1,24 +1,10 @@
-exports.getUsers = function (request) {
-  // TODO: Make DB call
-  let response = {
-    users: [
-      {
-        user: 'David Wosk',
-        user_id: 1
-      },
-      {
-        user: 'Gideon Chia',
-        user_id: 2
-      },
-      {
-        user: 'Jeff Chiu',
-        user_id: 3
-      }
-    ]
-  };
+let db = require('../db/database_mongo');
 
+exports.getUsers = function (request) {
   return new Promise(resolve => {
-    resolve(response);
+    db.getUsers(request).then(results => {
+      resolve(results);
+    });
   });
 };
 
