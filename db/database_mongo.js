@@ -21,7 +21,7 @@ exports.createArrangement = function (arrangement) {
         if (err) {
           console.log(err.stack);
         };
-        resolve(user);
+        resolve(arrangement);
       });
     });
   } catch (error) {
@@ -118,7 +118,7 @@ exports.updateArrangement = function (arrangement) {
         if (err) {
           console.log(err.stack);
         };
-        resolve(user);
+        resolve(arrangement);
       });
     });
   } catch (error) {
