@@ -1,1 +1,6 @@
-# arrangespace-server
+# Development
+
+```shell
+$ yarn install
+$ npm start
+```

@@ -1,0 +1,9 @@
+{
+  "root": true,
+  "extends": [
+    "standard"
+  ],
+  "rules": {
+    "semi": ["error", "always"]
+  }
+}
