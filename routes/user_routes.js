@@ -6,4 +6,7 @@ module.exports = function (app) {
 
   app.route('/users/:id')
     .get(userController.getUser);
+
+  app.route('/users/:id/arrangements')
+    .get(userController.getUserArrangements);
 };

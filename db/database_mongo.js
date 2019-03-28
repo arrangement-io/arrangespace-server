@@ -79,6 +79,7 @@ exports.getArrangement = function (arrangementId, request) {
   }
 };
 
+// TODO: Use googleId instead?
 exports.getUser = function (userId, request) {
   try {
     return new Promise(resolve => {
@@ -94,14 +95,30 @@ exports.getUser = function (userId, request) {
   }
 };
 
-exports.getUsers = function (model, request) {
+exports.getUserArrangements = function (userId, request) {
+  console.log('Getting user arrangements: ' + userId);
   try {
     return new Promise(resolve => {
-      User.find({}).toArray(function (err, docs) {
+      Arrangement.find({ 'owner': userId }).toArray(function (err, arrangements) {
         if (err) {
           console.log(err.stack);
         };
-        resolve(docs);
+        resolve(arrangements);
+      });
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.getUsers = function (model, request) {
+  try {
+    return new Promise(resolve => {
+      User.find({}).toArray(function (err, users) {
+        if (err) {
+          console.log(err.stack);
+        };
+        resolve(users);
       });
     });
   } catch (error) {

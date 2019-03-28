@@ -26,6 +26,7 @@ exports.getArrangement = function (request, response) {
     if (results) {
       response.status(200).send(JSON.stringify(results));
     } else {
+      // TODO: Create common error handler
       let results = {
         'arrangement': 'no arrangement found'
       };

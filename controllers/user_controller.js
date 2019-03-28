@@ -15,3 +15,12 @@ exports.getUser = function (request, response) {
     response.status(200).send(JSON.stringify(results));
   });
 };
+
+exports.getUserArrangements = function (request, response) {
+  let userId = request.params.id;
+
+  api.getUserArrangements(userId, request).then(results => {
+    response.set('Content-Type', 'text/plain');
+    response.status(200).send(JSON.stringify(results));
+  });
+};

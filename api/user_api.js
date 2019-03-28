@@ -23,3 +23,11 @@ exports.getUser = function (userId, request) {
     });
   });
 };
+
+exports.getUserArrangements = function (userId, request) {
+  return new Promise(resolve => {
+    db.getUserArrangements(userId, request).then(results => {
+      resolve(results);
+    });
+  });
+};
