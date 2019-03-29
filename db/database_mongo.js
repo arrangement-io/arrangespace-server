@@ -96,7 +96,6 @@ exports.getUser = function (userId, request) {
 };
 
 exports.getUserArrangements = function (userId, request) {
-  console.log('Getting user arrangements: ' + userId);
   try {
     return new Promise(resolve => {
       Arrangement.find({ 'owner': userId }).toArray(function (err, arrangements) {
