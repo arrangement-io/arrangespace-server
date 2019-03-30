@@ -1,9 +1,9 @@
 let db = require('../db/database_mongo');
 let Export = require('./internal/export');
 
-exports.createArrangement = function (arrangement) {
+exports.createArrangement = function (arrangementId, request, response) {
   return new Promise(resolve => {
-    db.createArrangement(arrangement).then(results => {
+    db.createArrangement(arrangementId, request).then(results => {
       resolve(results);
     });
   });
@@ -31,7 +31,7 @@ exports.exportArrangement = function (arrangementId, exportType, request) {
   });
 };
 
-exports.doesArrangementExist = function (arrangementId) {
+exports.doesArrangementExist = function (arrangementId, request) {
   return new Promise(resolve => {
     db.doesArrangementExist(arrangementId).then(results => {
       resolve(results);
@@ -39,9 +39,9 @@ exports.doesArrangementExist = function (arrangementId) {
   });
 };
 
-exports.updateArrangement = function (arrangement) {
+exports.updateArrangement = function (arrangementId, request, response) {
   return new Promise(resolve => {
-    db.updateArrangement(arrangement).then(results => {
+    db.updateArrangement(arrangementId, request).then(results => {
       resolve(results);
     });
   });

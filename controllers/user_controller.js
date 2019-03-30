@@ -11,7 +11,7 @@ exports.getUser = function (request, response) {
   let userId = request.params.id;
 
   api.getUser(userId, request).then(results => {
-    core.sendSuccessResponse(results, response);
+    core.sendResponse(results, response);
   });
 };
 
@@ -19,6 +19,6 @@ exports.getUserArrangements = function (request, response) {
   let userId = request.params.id;
 
   api.getUserArrangements(userId, request).then(results => {
-    core.sendSuccessResponse(results, response);
+    core.sendResponse(results, response);
   });
 };

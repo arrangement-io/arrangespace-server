@@ -1,7 +1,8 @@
 var MongoClient = require('mongodb').MongoClient;
-var ObjectId = require('mongodb').ObjectId;
 let User = null;
 let Arrangement = null;
+let mCore = require('./core_mongo');
+let core = require('../api/internal/core');
 
 exports.connect = async function (uri) {
   try {
@@ -9,135 +10,82 @@ exports.connect = async function (uri) {
     let db = client.db(process.env.MONGODB_NAME);
     User = db.collection('users');
     Arrangement = db.collection('arrangement');
+    mCore.registerResourceHandlers();
   } catch (error) {
     console.log(error);
   }
 };
 
-exports.createArrangement = function (arrangement) {
-  try {
-    return new Promise(resolve => {
-      Arrangement.insertOne(arrangement, function (err, user) {
-        if (err) {
-          console.log(err.stack);
-        };
-        resolve(arrangement);
-      });
+exports.createArrangement = function (arrangementId, request, response) {
+  return new Promise(resolve => {
+    // If request does not have this, mongo needs it
+    request.body._id = arrangementId;
+    mCore.createResource(Arrangement, arrangementId, request).then(results => {
+      resolve(results);
     });
-  } catch (error) {
-    console.log(error);
-  }
+  });
 };
 
-exports.createUser = function (user) {
-  let googleId = user.googleId;
-
-  try {
-    return new Promise(resolve => {
-      User.updateOne({ 'googleId': googleId }, { $set: user }, function (err, user) {
-        if (err) {
-          console.log(err.stack);
-        };
-        resolve(user);
-      });
+exports.createUser = function (request, response) {
+  return new Promise(resolve => {
+    let googleId = null;
+    try {
+      googleId = request.body.user_data.googleId;
+    } catch (error) {
+      core.sendFailure(400, 'missingParameters', 'Missing field: googleId', resolve);
+      return;
+    }
+    mCore.updateResource(User, googleId, request, 'googleId').then(results => {
+      resolve(results);
     });
-  } catch (error) {
-    console.log(error);
-  }
+  });
 };
 
-exports.doesArrangementExist = function (arrangementId) {
-  try {
-    return new Promise(resolve => {
-      Arrangement.findOne({ '_id': arrangementId }, function (err, arrangement) {
-        if (err) {
-          console.log(err.stack);
-        };
-        if (arrangement) {
-          resolve(true);
-        };
-        resolve(false);
-      });
+exports.doesArrangementExist = function (arrangementId, request) {
+  return new Promise(resolve => {
+    // Don't pass request so it is not validated
+    mCore.getResource(Arrangement, arrangementId).then(results => {
+      resolve(results);
     });
-  } catch (error) {
-    console.log(error);
-  }
+  });
 };
 
 exports.getArrangement = function (arrangementId, request) {
-  try {
-    return new Promise(resolve => {
-      Arrangement.findOne({ '_id': arrangementId }, function (err, arrangement) {
-        if (err) {
-          console.log(err.stack);
-        };
-        resolve(arrangement);
-      });
+  return new Promise(resolve => {
+    mCore.getResource(Arrangement, arrangementId, request).then(results => {
+      resolve(results);
     });
-  } catch (error) {
-    console.log(error);
-  }
+  });
 };
 
-// TODO: Use googleId instead?
-exports.getUser = function (userId, request) {
-  try {
-    return new Promise(resolve => {
-      User.findOne({ '_id': ObjectId(userId) }, function (err, user) {
-        if (err) {
-          console.log(err.stack);
-        };
-        resolve(user);
-      });
+exports.getUser = function (googleId, request) {
+  return new Promise(resolve => {
+    mCore.getResource(User, googleId, request, 'googleId').then(results => {
+      resolve(results);
     });
-  } catch (error) {
-    console.log(error);
-  }
+  });
 };
 
 exports.getUserArrangements = function (userId, request) {
-  try {
-    return new Promise(resolve => {
-      Arrangement.find({ 'owner': userId }).toArray(function (err, arrangements) {
-        if (err) {
-          console.log(err.stack);
-        };
-        resolve(arrangements);
-      });
+  return new Promise(resolve => {
+    mCore.getResource(Arrangement, userId, request, 'owner').then(results => {
+      resolve(results);
     });
-  } catch (error) {
-    console.log(error);
-  }
+  });
 };
 
-exports.getUsers = function (model, request) {
-  try {
-    return new Promise(resolve => {
-      User.find({}).toArray(function (err, users) {
-        if (err) {
-          console.log(err.stack);
-        };
-        resolve(users);
-      });
+exports.getUsers = function (request) {
+  return new Promise(resolve => {
+    mCore.getAllResources(User, request).then(results => {
+      resolve(results);
     });
-  } catch (error) {
-    console.log(error);
-  }
+  });
 };
 
-exports.updateArrangement = function (arrangement) {
-  let arrangementId = arrangement._id;
-
-  try {
-    return new Promise(resolve => {
-      Arrangement.updateOne({ '_id': arrangementId }, { $set: arrangement }, function (err, user) {
-        if (err) {
-          console.log(err.stack);
-        };
-        resolve(arrangement);
-      });
+exports.updateArrangement = function (arrangementId, request, response) {
+  return new Promise(resolve => {
+    mCore.updateResource(Arrangement, arrangementId, request, '_id').then(results => {
+      resolve(results);
     });
-  } catch (error) {
-    console.log(error);
-  }
+  });
 };
