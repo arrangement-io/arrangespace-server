@@ -14,10 +14,19 @@ exports.registerResourceHandlers = function () {
   };
 };
 
-exports.getResource = function (model, resourceId, request, key = '_id') {
+exports.getResource = function (model, resourceId, request=null, key = '_id') {
   return new Promise(resolve => {
     (async () => {
       try {
+        if (request) {
+          let results = await core.validateGetRequest(model, request);
+          // Failed validation
+          if (results.error) {
+            resolve(results);
+            return;
+          }
+        }
+
         let resourceHandler = getResourceHandlers[key];
         let object = await resourceHandler(model, resourceId, request);
         resolve(object);
@@ -80,7 +89,7 @@ exports.getAllResources = function (model, request) {
   return new Promise(resolve => {
     (async () => {
       try {
-        let results = await core.validateGetRequest(model, { request: request });
+        let results = await core.validateGetRequest(model, request);
         // Failed validation
         if (results.error) {
           resolve(results);

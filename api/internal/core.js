@@ -56,6 +56,30 @@ exports.resolveFailure404 = function (model, resourceId, resolve) {
   this.sendFailure(404, 'WRONG', `Could not find ${model.collectionName} with id: ${resourceId}`, resolve);
 };
 
+exports.validateGetRequest = function (model, request) {
+  // TODO: Validate headers
+  return new Promise(resolve => {
+    try {
+      (async () => {
+        if (request) {
+          if (Object.keys(request.query).length > 0) {
+            this.sendFailure(400, 'invalidParameters', `This endpoint does not support query parameters.`, resolve);
+            return;
+          }
+          if (Object.keys(request.body).length > 0) {
+            this.sendFailure(400, 'invalidParameters', `request.body not supported for method GET.`, resolve);
+            return;
+          }
+          // Passed validation
+          resolve({});
+        }
+      })();
+    } catch (error) {
+      resolve(error);
+    };
+  });
+};
+
 exports.validatePostRequest = function (model, request) {
   return new Promise(resolve => {
     try {

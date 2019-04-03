@@ -12,11 +12,16 @@ app.use(validator());
 // add some security-related headers to the response
 app.use(helmet());
 app.use(authMiddleware);
+app.use(express.static('doc'));
 
 // Import routes here
 require('./routes/session_routes')(app);
 require('./routes/user_routes')(app);
 require('./routes/arrangement_routes')(app);
+
+app.get('/docs', (request, response) => {
+  response.sendFile(__dirname + '/doc/index.html');
+})
 
 let db = require('./db/database_mongo');
 

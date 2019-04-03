@@ -35,10 +35,10 @@ exports.createUser = function (payload, request, response) {
   });
 };
 
-exports.doesArrangementExist = function (arrangementId, request) {
+exports.doesArrangementExist = function (arrangementId) {
   return new Promise(resolve => {
     // Don't pass request so it is not validated
-    mCore.getResource(Arrangement, arrangementId, request).then(results => {
+    mCore.getResource(Arrangement, arrangementId).then(results => {
       resolve(results);
     });
   });
