@@ -8,25 +8,19 @@ let db = require('../db/database_mongo');
  * @apiParam {String} access_token User access_token.
  * @apiParam {Object} user_data User Object.
  *
- * @apiSuccess {String} message You are logged in.
- *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
  *  {
- *    "message": "You are logged in."
+ *    {user-object}
  *  }
  */
 exports.logIn = function (payload, request, response) {
-  let success = {
-    message: 'You are logged in.'
-  };
-
   return new Promise(resolve => {
     db.createUser(payload, request, response).then(results => {
       if (!results.error) {
-        resolve(success);
+        resolve(results.user_data);
       } else {
-        resolve(results);
+        resolve(null);
       }
     });
   });

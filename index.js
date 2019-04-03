@@ -4,6 +4,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const authMiddleware = require('./utils/auth');
 const validator = require('express-validator');
+let path = require('path');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
@@ -20,8 +21,8 @@ require('./routes/user_routes')(app);
 require('./routes/arrangement_routes')(app);
 
 app.get('/docs', (request, response) => {
-  response.sendFile(__dirname + '/doc/index.html');
-})
+  response.sendFile(path.join(__dirname, '/doc/index.html'));
+});
 
 let db = require('./db/database_mongo');
 

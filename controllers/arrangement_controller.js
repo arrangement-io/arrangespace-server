@@ -5,19 +5,8 @@ exports.createArrangement = function (request, response) {
   let arrangementId = request.params.id;
   let payload = request.body;
 
-  api.doesArrangementExist(arrangementId, request).then(results => {
-    console.log(results)
-    if (!results.error) {
-      console.log('update')
-      api.updateArrangement(arrangementId, payload, request, response).then(results => {
-        core.sendSuccessResponse(results, response);
-      });
-    } else {
-      console.log('create')
-      api.createArrangement(arrangementId, payload, request, response).then(results => {
-        core.sendSuccessResponse(results, response);
-      });
-    }
+  api.updateArrangement(arrangementId, payload, request, response).then(results => {
+    core.sendSuccessResponse(results, response);
   });
 };
 
@@ -25,11 +14,10 @@ exports.exportArrangement = function (request, response) {
   let arrangementId = request.params.id;
   let exportType = request.params.type;
 
-  api.doesArrangementExist(arrangementId, request).then(exists => {
-    if (exists) {
+  api.doesArrangementExist(arrangementId, request).then(results => {
+    if (Object.keys(results).length > 0) {
       api.exportArrangement(arrangementId, exportType, request).then(results => {
-        response.set('Content-Type', 'text/html');
-        response.status(200).send(results);
+        core.sendSuccessHtmlResponse(results, response)
       });
     } else {
       core.sendResourceNotFound(request, response);

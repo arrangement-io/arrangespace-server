@@ -14,7 +14,7 @@ exports.registerResourceHandlers = function () {
   };
 };
 
-exports.getResource = function (model, resourceId, request=null, key = '_id') {
+exports.getResource = function (model, resourceId, request = null, key = '_id') {
   return new Promise(resolve => {
     (async () => {
       try {
@@ -54,7 +54,7 @@ exports.createResource = function (model, resourceId, payload, request) {
           } else if (objects.insertedCount === 1) {
             resolve({});
           } else {
-            // TODO: throw error
+            resolve(null);
           }
         });
       } catch (error) {
@@ -97,8 +97,10 @@ exports.getAllResources = function (model, request) {
         }
 
         model.find({}).toArray(function (error, objects) {
-          if (error || !objects) {
-            resolve(null);
+          if (error) {
+            resolve(error);
+          } else if (!objects || objects.length === 0) {
+            resolve([]);
           } else {
             resolve(objects);
           }
@@ -114,8 +116,10 @@ exports.getResourceById = function (model, resourceId, request) {
   return new Promise(resolve => {
     try {
       model.findOne({ _id: resourceId }, function (error, objects) {
-        if (error || !objects) {
-          core.resolveFailure404(model, resourceId, resolve);
+        if (error) {
+          resolve(error);
+        } else if (!objects || Object.keys(objects).length === 0) {
+          resolve({});
         } else {
           resolve(objects);
         }
@@ -130,9 +134,10 @@ exports.getResourceByGoogleId = function (model, resourceId, request) {
   return new Promise(resolve => {
     try {
       model.findOne({ googleId: resourceId }, function (error, objects) {
-        if (error || !objects) {
-          // return empty results not an error if objects is empty
-          core.resolveFailure404(model, resourceId, resolve);
+        if (error) {
+          resolve(error);
+        } else if (!objects || Object.keys(objects).length === 0) {
+          resolve({});
         } else {
           resolve(objects);
         }
@@ -147,8 +152,10 @@ exports.getResourceByOwner = function (model, resourceId, request) {
   return new Promise(resolve => {
     try {
       model.find({ owner: resourceId }).toArray(function (error, objects) {
-        if (error || !objects) {
-          core.resolveFailure404(model, resourceId, resolve);
+        if (error) {
+          resolve(error);
+        } else if (!objects || objects.length === 0) {
+          resolve([]);
         } else {
           resolve(objects);
         }
@@ -159,15 +166,15 @@ exports.getResourceByOwner = function (model, resourceId, request) {
   });
 };
 
-// Find by googleId and if does not exist then create
+// TODO: Combine both update handlers to use single filter parameter
 exports.updateResourceByGoogleId = function (model, payload) {
   return new Promise(resolve => {
     try {
-      model.updateOne({ googleId: payload.user_data.googleId }, { $set: payload.user_data }, { upsert: true }, function (error, objects) {
-        if (error || !objects) {
-          core.resolveFailure404(model, payload.user_data.googleId, resolve);
+      model.findOneAndUpdate({ googleId: payload.user_data.googleId }, { $set: payload.user_data }, { upsert: true }, function (error, objects) {
+        if (error) {
+          core.sendFailure(500, 'unknownError', error.stack, resolve);
         } else {
-          resolve({});
+          resolve(payload);
         }
       });
     } catch (error) {
@@ -176,18 +183,14 @@ exports.updateResourceByGoogleId = function (model, payload) {
   });
 };
 
-// Find by _id and if does not exist then create
-// TODO: updateOne fails if finding by _id and request has _id as well
 exports.updateResourceById = function (model, payload) {
   return new Promise(resolve => {
     try {
-      model.updateOne({ _id: payload._id }, { $set: payload }, { upsert: true }, function (error, objects) {
+      model.findOneAndUpdate({ _id: payload._id }, { $set: payload }, { upsert: true }, function (error, objects) {
         if (error) {
-          core.sendFailure(500, 'mongoError', error.stack, resolve);
-          // This is wrong
-          // core.resolveFailure404(model, resourceId, resolve);
+          core.sendFailure(500, 'unknownError', error.stack, resolve);
         } else {
-          resolve({});
+          resolve(payload);
         }
       });
     } catch (error) {

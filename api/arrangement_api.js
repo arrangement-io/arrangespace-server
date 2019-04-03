@@ -13,11 +13,13 @@ let Export = require('./internal/export');
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
- *  {}
+ *  {
+ *    {arrangement-object}
+ *  }
  */
 exports.createArrangement = function (arrangementId, payload, request, response) {
   return new Promise(resolve => {
-    db.createArrangement(arrangementId, payload, request, response).then(results => {
+    db.updateArrangement(arrangementId, payload, request, response).then(results => {
       resolve(results);
     });
   });
@@ -107,14 +109,6 @@ exports.exportArrangement = function (arrangementId, exportType, request) {
 exports.doesArrangementExist = function (arrangementId) {
   return new Promise(resolve => {
     db.doesArrangementExist(arrangementId).then(results => {
-      resolve(results);
-    });
-  });
-};
-
-exports.updateArrangement = function (arrangementId, payload, request, response) {
-  return new Promise(resolve => {
-    db.updateArrangement(arrangementId, payload, request, response).then(results => {
       resolve(results);
     });
   });

@@ -1,7 +1,11 @@
 exports.sendResourceNotFound = function (request, response) {
   response.status(404);
   let payload = {
-    'error': `Could not find resource with id: ${request.params.id}`
+    error: {
+      status: 404,
+      reason: 'notFound',
+      message: `Could not find resource with id: ${request.params.id}`
+    }
   };
 
   this.setHeaders(response);
@@ -17,6 +21,12 @@ exports.setHeaders = function (response) {
   response.set('Content-Type', 'application/json');
 };
 
+exports.sendSuccessHtmlResponse = function (results, response) {
+  response.set('Content-Type', 'text/html');
+  response.status(200);
+  response.send(results);
+};
+
 exports.sendSuccessResponse = function (results, response) {
   response.status(200);
   this.setHeaders(response);
@@ -24,7 +34,7 @@ exports.sendSuccessResponse = function (results, response) {
 };
 
 exports.sendResponse = function (results, response) {
-  if (results.error) {
+  if (!results || results.error) {
     this.sendFailureResponse(results, response);
     return;
   }
@@ -35,10 +45,10 @@ exports.sendResponse = function (results, response) {
 exports.sendFailure = function (status, reason = 'standardError', message, resolve) {
   if (resolve) {
     let results = {
-      'error': {
-        'status': status,
-        'reason': reason,
-        'message': message
+      error: {
+        status: status,
+        reason: reason,
+        message: message
       }
     };
 
@@ -80,6 +90,7 @@ exports.validateGetRequest = function (model, request) {
   });
 };
 
+// TODO: Check for foreign fields
 exports.validatePostRequest = function (model, request) {
   return new Promise(resolve => {
     try {
