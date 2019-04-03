@@ -2,7 +2,6 @@ var MongoClient = require('mongodb').MongoClient;
 let User = null;
 let Arrangement = null;
 let mCore = require('./core_mongo');
-let core = require('../api/internal/core');
 
 exports.connect = async function (uri) {
   try {
@@ -16,26 +15,21 @@ exports.connect = async function (uri) {
   }
 };
 
-exports.createArrangement = function (arrangementId, request, response) {
+exports.createArrangement = function (arrangementId, payload, request, response) {
   return new Promise(resolve => {
     // If request does not have this, mongo needs it
-    request.body._id = arrangementId;
-    mCore.createResource(Arrangement, arrangementId, request).then(results => {
+    if (!payload._id) {
+      payload._id = arrangementId;
+    }
+    mCore.createResource(Arrangement, arrangementId, payload, request).then(results => {
       resolve(results);
     });
   });
 };
 
-exports.createUser = function (request, response) {
+exports.createUser = function (payload, request, response) {
   return new Promise(resolve => {
-    let googleId = null;
-    try {
-      googleId = request.body.user_data.googleId;
-    } catch (error) {
-      core.sendFailure(400, 'missingParameters', 'Missing field: googleId', resolve);
-      return;
-    }
-    mCore.updateResource(User, googleId, request, 'googleId').then(results => {
+    mCore.updateResource(User, payload, 'googleId', request).then(results => {
       resolve(results);
     });
   });
@@ -44,7 +38,7 @@ exports.createUser = function (request, response) {
 exports.doesArrangementExist = function (arrangementId, request) {
   return new Promise(resolve => {
     // Don't pass request so it is not validated
-    mCore.getResource(Arrangement, arrangementId).then(results => {
+    mCore.getResource(Arrangement, arrangementId, request).then(results => {
       resolve(results);
     });
   });
@@ -82,9 +76,9 @@ exports.getUsers = function (request) {
   });
 };
 
-exports.updateArrangement = function (arrangementId, request, response) {
+exports.updateArrangement = function (arrangementId, payload, request, response) {
   return new Promise(resolve => {
-    mCore.updateResource(Arrangement, arrangementId, request, '_id').then(results => {
+    mCore.updateResource(Arrangement, payload, '_id', request).then(results => {
       resolve(results);
     });
   });

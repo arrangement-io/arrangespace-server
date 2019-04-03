@@ -1,7 +1,3 @@
-const USER_FIELDS = [
-  'googleId', 'imageUrl', 'email', 'name', 'givenName', 'familyName'
-];
-
 exports.sendResourceNotFound = function (request, response) {
   response.status(404);
   let payload = {
@@ -60,58 +56,40 @@ exports.resolveFailure404 = function (model, resourceId, resolve) {
   this.sendFailure(404, 'WRONG', `Could not find ${model.collectionName} with id: ${resourceId}`, resolve);
 };
 
-exports.validateGetRequest = function (model, { request, resourceId } = { resourceId: null }) {
-  // TODO: Validate headers
+exports.validatePostRequest = function (model, request) {
   return new Promise(resolve => {
     try {
       (async () => {
-        if (Object.keys(request.query).length > 0) {
-          this.sendFailure(400, 'invalidParameters', `This endpoint does not support query parameters.`, resolve);
-          return;
-        }
-        if (Object.keys(request.body).length > 0) {
-          this.sendFailure(400, 'invalidParameters', `request.body not supported for method GET.`, resolve);
-          return;
-        }
-        // Passed validation
-        resolve({});
-      })();
-    } catch (error) {
-      resolve(error);
-    };
-  });
-};
-
-exports.validateCreateUserRequest = function (request) {
-  for (let key in request.body) {
-    if (key === 'user_data') {
-      for (let field in request.body.user_data) {
-        if (!USER_FIELDS.includes(field)) {
-          return field;
-        }
-      }
-    }
-  }
-};
-
-exports.validatePostRequest = function (model, { request, resourceId } = { resourceId: null }) {
-  return new Promise(resolve => {
-    try {
-      (async () => {
-        if (Object.keys(request.body).length === 0) {
-          this.sendFailure(400, 'missingParameters', `This endpoint requires a payload.`, resolve);
-          return;
-        }
-
-        // Validate request fields
+        // TODO: Use schemas
+        // let userSchema = request.check(schema)
         if (model.collectionName === 'users') {
-          let error = this.validateCreateUserRequest(request);
-          if (error) {
-            this.sendFailure(400, 'invalidParameter', `Unexpected key: ${error}`, resolve);
-            return;
-          }
+          request.checkBody('access_token', 'access_token is required').notEmpty();
+          request.checkBody('user_data', 'user_data is required').notEmpty();
+          request.checkBody('user_data.googleId', 'googleId is required').notEmpty();
+          request.checkBody('user_data.imageUrl', 'imageUrl is required').notEmpty();
+          request.checkBody('user_data.email', 'email is required').notEmpty();
+          request.checkBody('user_data.name', 'name is required').notEmpty();
+          request.checkBody('user_data.givenName', 'givenName is required').notEmpty();
+          request.checkBody('user_data.familyName', 'familyName is required').notEmpty();
+        } else if (model.collectionName === 'arrangement') {
+          request.checkBody('_id', '_id is required').notEmpty();
+          request.checkBody('containers', 'containers is required').exists();
+          request.checkBody('is_deleted', 'is_deleted is required').notEmpty();
+          request.checkBody('items', 'items is required').exists();
+          request.checkBody('modified_timestamp', 'modified_timestamp is required').notEmpty();
+          request.checkBody('name', 'name is required').notEmpty();
+          request.checkBody('owner', 'owner is required').notEmpty();
+          request.checkBody('snapshots', 'snapshots is required').notEmpty();
+          request.checkBody('timestamp', 'timestamp is required').notEmpty();
+          request.checkBody('user', 'user is required').notEmpty();
+          request.checkBody('users', 'users is required').notEmpty();
         }
-        // Passed validation
+
+        var errors = request.validationErrors();
+        if (errors) {
+          this.sendFailure(400, 'validationError', errors, resolve);
+          return;
+        }
         resolve({});
       })();
     } catch (error) {

@@ -1,13 +1,5 @@
 let db = require('../db/database_mongo');
 
-exports.createUser = function (request) {
-  return new Promise(resolve => {
-    db.getUsers(request).then(results => {
-      resolve(results);
-    });
-  });
-};
-
 exports.getUsers = function (request) {
   return new Promise(resolve => {
     db.getUsers(request).then(results => {

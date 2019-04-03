@@ -3,9 +3,11 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const authMiddleware = require('./utils/auth');
+const validator = require('express-validator');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(validator());
 
 // add some security-related headers to the response
 app.use(helmet());

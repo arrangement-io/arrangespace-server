@@ -4,7 +4,6 @@ module.exports = function (app) {
   app.route('/arrangement/:id')
     .get(arrangementController.getArrangement);
 
-  // TODO: Change to /arrangement/:id
   app.route('/arrangement/:id')
     .post(arrangementController.createArrangement);
 

@@ -3,14 +3,15 @@ let core = require('../api/internal/core');
 
 exports.createArrangement = function (request, response) {
   let arrangementId = request.params.id;
+  let payload = request.body;
 
   api.doesArrangementExist(arrangementId, request).then(results => {
     if (!results.error) {
-      api.updateArrangement(arrangementId, request, response).then(results => {
+      api.updateArrangement(arrangementId, payload, request, response).then(results => {
         core.sendSuccessResponse(results, response);
       });
     } else {
-      api.createArrangement(arrangementId, request, response).then(results => {
+      api.createArrangement(arrangementId, payload, request, response).then(results => {
         core.sendSuccessResponse(results, response);
       });
     }
@@ -21,10 +22,11 @@ exports.createArrangement = function (request, response) {
 exports.exportArrangement = function (request, response) {
   let arrangementId = request.params.id;
   let exportType = request.params.type;
+  let payload = request.body;
 
   api.doesArrangementExist(arrangementId, request).then(exists => {
     if (exists) {
-      api.exportArrangement(arrangementId, exportType, request).then(results => {
+      api.exportArrangement(arrangementId, exportType, payload).then(results => {
         response.set('Content-Type', 'text/html');
         response.status(200).send(results);
       });

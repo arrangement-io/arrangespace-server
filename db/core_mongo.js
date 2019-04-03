@@ -18,15 +18,6 @@ exports.getResource = function (model, resourceId, request, key = '_id') {
   return new Promise(resolve => {
     (async () => {
       try {
-        if (request) {
-          let results = await core.validateGetRequest(model, { request: request, resourceId: resourceId });
-          // Failed validation
-          if (results.error) {
-            resolve(results);
-            return;
-          }
-        }
-
         let resourceHandler = getResourceHandlers[key];
         let object = await resourceHandler(model, resourceId, request);
         resolve(object);
@@ -37,18 +28,18 @@ exports.getResource = function (model, resourceId, request, key = '_id') {
   });
 };
 
-exports.createResource = function (model, resourceId, request) {
+exports.createResource = function (model, resourceId, payload, request) {
   return new Promise(resolve => {
     (async () => {
       try {
-        let results = await core.validatePostRequest(model, { request: request, resourceId: resourceId });
+        let results = await core.validatePostRequest(model, request);
         // Failed validation
         if (results.error) {
           resolve(results);
           return;
         }
 
-        model.insertOne(request.body, function (error, objects) {
+        model.insertOne(payload, function (error, objects) {
           if (error) {
             resolve(error);
           } else if (objects.insertedCount === 1) {
@@ -64,11 +55,11 @@ exports.createResource = function (model, resourceId, request) {
   });
 };
 
-exports.updateResource = function (model, resourceId, request, key = '_id') {
+exports.updateResource = function (model, payload, key = '_id', request) {
   return new Promise(resolve => {
     (async () => {
       try {
-        let results = await core.validatePostRequest(model, { request: request, resourceId: resourceId });
+        let results = await core.validatePostRequest(model, request);
         // Failed validation
         if (results.error) {
           resolve(results);
@@ -76,7 +67,7 @@ exports.updateResource = function (model, resourceId, request, key = '_id') {
         }
 
         let resourceHandler = updateResourceHandlers[key];
-        let object = await resourceHandler(model, resourceId, request);
+        let object = await resourceHandler(model, payload);
         resolve(object);
       } catch (error) {
         core.resolveCatchError(error.stack, resolve);
@@ -160,12 +151,12 @@ exports.getResourceByOwner = function (model, resourceId, request) {
 };
 
 // Find by googleId and if does not exist then create
-exports.updateResourceByGoogleId = function (model, resourceId, request) {
+exports.updateResourceByGoogleId = function (model, payload) {
   return new Promise(resolve => {
     try {
-      model.updateOne({ googleId: resourceId }, { $set: request.body }, { upsert: true }, function (error, objects) {
+      model.updateOne({ googleId: payload.user_data.googleId }, { $set: payload.user_data }, { upsert: true }, function (error, objects) {
         if (error || !objects) {
-          core.resolveFailure404(model, resourceId, resolve);
+          core.resolveFailure404(model, payload.user_data.googleId, resolve);
         } else {
           resolve({});
         }
@@ -178,10 +169,10 @@ exports.updateResourceByGoogleId = function (model, resourceId, request) {
 
 // Find by _id and if does not exist then create
 // TODO: updateOne fails if finding by _id and request has _id as well
-exports.updateResourceById = function (model, resourceId, request) {
+exports.updateResourceById = function (model, payload) {
   return new Promise(resolve => {
     try {
-      model.updateOne({ _id: resourceId }, { $set: request.body }, { upsert: true }, function (error, objects) {
+      model.updateOne({ _id: payload._id }, { $set: payload }, { upsert: true }, function (error, objects) {
         if (error) {
           core.sendFailure(500, 'mongoError', error.stack, resolve);
           // This is wrong

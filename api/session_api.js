@@ -1,12 +1,12 @@
 let db = require('../db/database_mongo');
 
-exports.logIn = function (request, response) {
+exports.logIn = function (payload, request, response) {
   let success = {
     message: 'You are logged in.'
   };
 
   return new Promise(resolve => {
-    db.createUser(request, response).then(results => {
+    db.createUser(payload, request, response).then(results => {
       if (!results.error) {
         resolve(success);
       } else {
