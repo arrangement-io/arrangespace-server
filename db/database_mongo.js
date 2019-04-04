@@ -2,14 +2,16 @@ var MongoClient = require('mongodb').MongoClient;
 let User = null;
 let Arrangement = null;
 let mCore = require('./core_mongo');
+var app = require('../index');
 
 exports.connect = async function (uri) {
   try {
+    mCore.registerResourceHandlers();
     let client = await MongoClient.connect(uri, { useNewUrlParser: true });
     let db = await client.db(process.env.MONGODB_NAME);
     User = db.collection('users');
     Arrangement = db.collection('arrangement');
-    mCore.registerResourceHandlers();
+    app.emit('ready');
   } catch (error) {
     console.log(error);
   }
