@@ -12,6 +12,7 @@ exports.sendResourceNotFound = function (request, response) {
 };
 
 exports.sendFailureResponse = function (payload, response) {
+  response.status(payload.error.status);
   response.json(payload);
 };
 
