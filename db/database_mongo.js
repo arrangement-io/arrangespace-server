@@ -6,7 +6,7 @@ let mCore = require('./core_mongo');
 exports.connect = async function (uri) {
   try {
     let client = await MongoClient.connect(uri, { useNewUrlParser: true });
-    let db = client.db(process.env.MONGODB_NAME);
+    let db = await client.db(process.env.MONGODB_NAME);
     User = db.collection('users');
     Arrangement = db.collection('arrangement');
     mCore.registerResourceHandlers();

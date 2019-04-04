@@ -29,8 +29,7 @@ let db = require('./db/database_mongo');
 const port = process.env.PORT || 3000;
 app.listen(port, function () {
   console.log(`Server listening on port ${port}!`);
-  let mongoUri = process.env.MONGODB_URI;
-  db.connect(mongoUri);
+  db.connect(process.env.MONGODB_URI);
 });
 
 module.exports = app;
