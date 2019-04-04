@@ -11,6 +11,30 @@ let Export = require('./internal/export');
  * @apiParam {Number} id Arrangments unique ID.
  * @apiParam {Object} Object Arrangement Object.
  *
+ * @apiExample Example Arrangement Object:
+ *  {
+ *    "_id": "aTBG6NVPP",
+ *    "containers": [],
+ *    "is_deleted": false,
+ *    "items": [],
+ *    "modified_timestamp": 1554263347.135,
+ *    "name": "My New Arrangement",
+ *    "owner": "106427691348095657861",
+ *    "snapshots": [
+ *      {
+ *        "_id": "sZ8O2QXLE",
+ *        "name": "Snapshot 1",
+ *        "snapshot": {},
+ *        "snapshotContainers": [],
+ *        "unassigned": []
+ *      }
+ *    ],
+ *    "timestamp": 1554263341.683,
+ *    "user": "106427691348095657861",
+ *    "users": [
+ *      "106427691348095657861"
+ *    ]
+ *  }
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
  *  {

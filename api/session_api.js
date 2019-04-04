@@ -8,6 +8,20 @@ let db = require('../db/database_mongo');
  * @apiParam {String} access_token User access_token.
  * @apiParam {Object} user_data User Object.
  *
+ * @apiExample Example User Object:
+ *     {
+ *       "access_token": "ya29.GlzcBkNmWxyefozXxA6gWeCoLfuNmp_U0_9dC7aRK7mRu2m0k7GV59Eo4yK4vWH-tn9QQ77AOmy62wdl5OxIWOsGcB7uZ8pdluO44VPdEqVkV5MGKpxV4oWrHd6wkw",
+ *       "user_data": {
+ *         "_id": "5c8834497a09b7bf2ca1d98b",
+ *         "familyName": "Chia",
+ *         "imageUrl": "https://lh3.googleusercontent.com/-CIJl6ntqVg4/AAAAAAAAAAI/AAAAAAAAABY/Jfd1E76bbhA/s96-c/photo.jpg",
+ *         "name": "Gideon Chia",
+ *         "googleId": "116550101409368732312",
+ *         "email": "gideon.chia@gmail.com",
+ *         "givenName": "Gideon"
+ *       }
+ *     }
+ *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
  *  {
