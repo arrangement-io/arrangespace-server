@@ -64,33 +64,6 @@ exports.getResources = function (model, query, request) {
   });
 };
 
-exports.createResource = function (model, resourceId, payload, request) {
-  return new Promise(resolve => {
-    (async () => {
-      try {
-        let results = await core.validatePostRequest(model, request);
-        // Failed validation
-        if (results.error) {
-          resolve(results);
-          return;
-        }
-
-        model.insertOne(payload, function (error, objects) {
-          if (error) {
-            resolve(error);
-          } else if (objects.insertedCount === 1) {
-            resolve({});
-          } else {
-            resolve(null);
-          }
-        });
-      } catch (error) {
-        core.resolveCatchError(error.stack, resolve);
-      }
-    })();
-  });
-};
-
 exports.updateResource = function (model, payload, key, request) {
   return new Promise(resolve => {
     (async () => {
