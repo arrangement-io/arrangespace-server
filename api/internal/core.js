@@ -8,12 +8,10 @@ exports.sendResourceNotFound = function (request, response) {
     }
   };
 
-  this.setHeaders(response);
   this.sendFailureResponse(payload, response);
 };
 
 exports.sendFailureResponse = function (payload, response) {
-  this.setHeaders(response);
   response.json(payload);
 };
 
@@ -29,7 +27,6 @@ exports.sendSuccessHtmlResponse = function (results, response) {
 
 exports.sendSuccessResponse = function (results, response) {
   response.status(200);
-  this.setHeaders(response);
   response.json(results);
 };
 
@@ -62,12 +59,7 @@ exports.resolveCatchError = function (error, resolve) {
   this.sendFailure(500, 'unknownFailure', error, resolve);
 };
 
-exports.resolveFailure404 = function (model, resourceId, resolve) {
-  this.sendFailure(404, 'WRONG', `Could not find ${model.collectionName} with id: ${resourceId}`, resolve);
-};
-
 exports.validateGetRequest = function (model, request) {
-  // TODO: Validate headers
   return new Promise(resolve => {
     try {
       (async () => {

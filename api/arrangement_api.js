@@ -19,7 +19,7 @@ let Export = require('./internal/export');
  */
 exports.createArrangement = function (arrangementId, payload, request, response) {
   return new Promise(resolve => {
-    db.updateArrangement(arrangementId, payload, request, response).then(results => {
+    db.createArrangement(arrangementId, payload, request, response).then(results => {
       resolve(results);
     });
   });

@@ -5,7 +5,7 @@ exports.createArrangement = function (request, response) {
   let arrangementId = request.params.id;
   let payload = request.body;
 
-  api.updateArrangement(arrangementId, payload, request, response).then(results => {
+  api.createArrangement(arrangementId, payload, request, response).then(results => {
     core.sendSuccessResponse(results, response);
   });
 };
@@ -17,7 +17,7 @@ exports.exportArrangement = function (request, response) {
   api.doesArrangementExist(arrangementId, request).then(results => {
     if (Object.keys(results).length > 0) {
       api.exportArrangement(arrangementId, exportType, request).then(results => {
-        core.sendSuccessHtmlResponse(results, response)
+        core.sendSuccessHtmlResponse(results, response);
       });
     } else {
       core.sendResourceNotFound(request, response);

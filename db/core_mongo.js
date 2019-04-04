@@ -1,20 +1,14 @@
 const core = require('../api/internal/core');
-let getResourceHandlers = {};
 let updateResourceHandlers = {};
 
 exports.registerResourceHandlers = function () {
-  getResourceHandlers = {
-    '_id': this.getResourceById,
-    'owner': this.getResourceByOwner,
-    'googleId': this.getResourceByGoogleId
-  };
   updateResourceHandlers = {
     '_id': this.updateResourceById,
     'googleId': this.updateResourceByGoogleId
   };
 };
 
-exports.getResource = function (model, resourceId, request = null, key = '_id') {
+exports.getResource = function (model, query, request = null) {
   return new Promise(resolve => {
     (async () => {
       try {
@@ -27,12 +21,45 @@ exports.getResource = function (model, resourceId, request = null, key = '_id') 
           }
         }
 
-        let resourceHandler = getResourceHandlers[key];
-        let object = await resourceHandler(model, resourceId, request);
-        resolve(object);
+        model.findOne(query, function (error, objects) {
+          if (error) {
+            resolve(error);
+          } else if (!objects || Object.keys(objects).length === 0) {
+            resolve({});
+          } else {
+            resolve(objects);
+          }
+        });
       } catch (error) {
         core.resolveCatchError(error.stack, resolve);
       };
+    })();
+  });
+};
+
+exports.getResources = function (model, query, request) {
+  return new Promise(resolve => {
+    (async () => {
+      try {
+        let results = await core.validateGetRequest(model, request);
+        // Failed validation
+        if (results.error) {
+          resolve(results);
+          return;
+        }
+
+        model.find(query).toArray(function (error, objects) {
+          if (error) {
+            resolve(error);
+          } else if (!objects || objects.length === 0) {
+            resolve([]);
+          } else {
+            resolve(objects);
+          }
+        });
+      } catch (error) {
+        core.resolveCatchError(error.stack, resolve);
+      }
     })();
   });
 };
@@ -64,7 +91,7 @@ exports.createResource = function (model, resourceId, payload, request) {
   });
 };
 
-exports.updateResource = function (model, payload, key = '_id', request) {
+exports.updateResource = function (model, payload, key, request) {
   return new Promise(resolve => {
     (async () => {
       try {
@@ -82,87 +109,6 @@ exports.updateResource = function (model, payload, key = '_id', request) {
         core.resolveCatchError(error.stack, resolve);
       };
     })();
-  });
-};
-
-exports.getAllResources = function (model, request) {
-  return new Promise(resolve => {
-    (async () => {
-      try {
-        let results = await core.validateGetRequest(model, request);
-        // Failed validation
-        if (results.error) {
-          resolve(results);
-          return;
-        }
-
-        model.find({}).toArray(function (error, objects) {
-          if (error) {
-            resolve(error);
-          } else if (!objects || objects.length === 0) {
-            resolve([]);
-          } else {
-            resolve(objects);
-          }
-        });
-      } catch (error) {
-        core.resolveCatchError(error.stack, resolve);
-      }
-    })();
-  });
-};
-
-exports.getResourceById = function (model, resourceId, request) {
-  return new Promise(resolve => {
-    try {
-      model.findOne({ _id: resourceId }, function (error, objects) {
-        if (error) {
-          resolve(error);
-        } else if (!objects || Object.keys(objects).length === 0) {
-          resolve({});
-        } else {
-          resolve(objects);
-        }
-      });
-    } catch (error) {
-      resolve(null);
-    }
-  });
-};
-
-exports.getResourceByGoogleId = function (model, resourceId, request) {
-  return new Promise(resolve => {
-    try {
-      model.findOne({ googleId: resourceId }, function (error, objects) {
-        if (error) {
-          resolve(error);
-        } else if (!objects || Object.keys(objects).length === 0) {
-          resolve({});
-        } else {
-          resolve(objects);
-        }
-      });
-    } catch (error) {
-      resolve(null);
-    }
-  });
-};
-
-exports.getResourceByOwner = function (model, resourceId, request) {
-  return new Promise(resolve => {
-    try {
-      model.find({ owner: resourceId }).toArray(function (error, objects) {
-        if (error) {
-          resolve(error);
-        } else if (!objects || objects.length === 0) {
-          resolve([]);
-        } else {
-          resolve(objects);
-        }
-      });
-    } catch (error) {
-      resolve(null);
-    }
   });
 };
 
