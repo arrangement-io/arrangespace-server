@@ -47,6 +47,7 @@ exports.renderArrangement = function (arrangement) {
     let longestArrayIndex = snapshotRender.reduce(function (maxI, el, i, arr) {
       return el.length > arr[maxI].length ? i : maxI;
     }, 0);
+    // If index is not 0, then the first row is not the longest, so extend it.
     if (longestArrayIndex > 0) {
       let lengthDiff = snapshotRender[longestArrayIndex].length - snapshotRender[0].length;
       let extend = Array(lengthDiff).fill('');

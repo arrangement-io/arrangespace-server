@@ -39,12 +39,12 @@ exports.getUsers = function (request) {
  *     HTTP/1.1 200 OK
  *     {
  *       "_id": "5c8834497a09b7bf2ca1d98b",
- *       "familyName": "Chia",
- *       "imageUrl": "https://lh3.googleusercontent.com/-CIJl6ntqVg4/AAAAAAAAAAI/AAAAAAAAABY/Jfd1E76bbhA/s96-c/photo.jpg",
- *       "name": "Gideon Chia",
- *       "googleId": "116550101409368732312",
- *       "email": "gideon.chia@gmail.com",
- *       "givenName": "Gideon"
+ *       "familyName": "Smith",
+ *       "imageUrl": "https://lh3.googleusercontent.com/-CIPl64tqNg5/AAAAAAAAAAI/AAAAAAAAABY/Lfd1E36kjhQ/s86-c/photo.jpg",
+ *       "name": "John Smith",
+ *       "googleId": "787892576560105732255",
+ *       "email": "john.smith@gmail.com",
+ *       "givenName": "John"
  *     }
  */
 exports.getUser = function (userId, request) {

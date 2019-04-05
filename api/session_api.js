@@ -12,12 +12,12 @@ let db = require('../db/database_mongo');
  *     {
  *       "access_token": "ya29.GlzcBkNmWxyefozXxA6gWeCoLfuNmp_U0_9dC7aRK7mRu2m0k7GV59Eo4yK4vWH-tn9QQ77AOmy62wdl5OxIWOsGcB7uZ8pdluO44VPdEqVkV5MGKpxV4oWrHd6wkw",
  *       "user_data": {
- *         "familyName": "Chia",
- *         "imageUrl": "https://lh3.googleusercontent.com/-CIJl6ntqVg4/AAAAAAAAAAI/AAAAAAAAABY/Jfd1E76bbhA/s96-c/photo.jpg",
- *         "name": "Gideon Chia",
- *         "googleId": "116550101409368732312",
- *         "email": "gideon.chia@gmail.com",
- *         "givenName": "Gideon"
+ *         "familyName": "Smith",
+ *         "imageUrl": "https://lh3.googleusercontent.com/-CIPl64tqNg5/AAAAAAAAAAI/AAAAAAAAABY/Lfd1E36kjhQ/s86-c/photo.jpg",
+ *         "name": "John Smith",
+ *         "googleId": "787892576560105732255",
+ *         "email": "john.smith@gmail.com",
+ *         "givenName": "John"
  *       }
  *     }
  *

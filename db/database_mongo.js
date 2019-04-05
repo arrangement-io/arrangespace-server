@@ -6,13 +6,17 @@ var app = require('../index');
 
 exports.connect = async function (uri) {
   try {
-    mCore.registerResourceHandlers();
-    let client = await MongoClient.connect(uri, { useNewUrlParser: true });
-    let db = await client.db(process.env.MONGODB_NAME);
-    User = db.collection('users');
-    Arrangement = db.collection('arrangement');
-    app.emit('ready');
-    console.log('Successfully made connection to database...');
+    if (uri) {
+      mCore.registerResourceHandlers();
+      let client = await MongoClient.connect(uri, { useNewUrlParser: true });
+      let db = await client.db(process.env.MONGODB_NAME);
+      User = db.collection('users');
+      Arrangement = db.collection('arrangement');
+      app.emit('ready');
+      console.log('Successfully made connection to database...');
+    } else {
+      console.log('Please set MONGODB_URI and MONGODB_NAME before attempting to start the server.');
+    }
   } catch (error) {
     console.log(error);
   }

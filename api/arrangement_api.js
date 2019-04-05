@@ -19,7 +19,7 @@ let Export = require('./internal/export');
  *    "items": [],
  *    "modified_timestamp": 1554263347.135,
  *    "name": "My New Arrangement",
- *    "owner": "106427691348095657861",
+ *    "owner": "787892576560105732255",
  *    "snapshots": [
  *      {
  *        "_id": "sZ8O2QXLE",
@@ -30,9 +30,9 @@ let Export = require('./internal/export');
  *      }
  *    ],
  *    "timestamp": 1554263341.683,
- *    "user": "106427691348095657861",
+ *    "user": "787892576560105732255",
  *    "users": [
- *      "106427691348095657861"
+ *      "787892576560105732255"
  *    ]
  *  }
  * @apiSuccessExample Success-Response:
@@ -76,7 +76,7 @@ exports.createArrangement = function (arrangementId, payload, request, response)
  *    "items": [],
  *    "modified_timestamp": 1554263347.135,
  *    "name": "Untitled Arrangement",
- *    "owner": "106427691348095657861",
+ *    "owner": "787892576560105732255",
  *    "snapshots": [
  *      {
  *        "_id": "sZ8O2QXLE",
@@ -87,9 +87,9 @@ exports.createArrangement = function (arrangementId, payload, request, response)
  *      }
  *    ],
  *    "timestamp": 1554263341.683,
- *    "user": "106427691348095657861",
+ *    "user": "787892576560105732255",
  *    "users": [
- *      "106427691348095657861"
+ *      "787892576560105732255"
  *    ]
  *  }
  */

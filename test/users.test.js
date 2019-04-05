@@ -13,20 +13,20 @@ describe('Users', () => {
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('array');
-          res.body.should.have.lengthOf(12);
+          res.body.should.have.lengthOf(6);
           res.body[0].should.be.a('object');
           done();
         });
     });
 
     it('should get a single user', (done) => {
-      const googleId = '113543144919720165342';
+      const googleId = '623734482213542756012';
       chai.request(app)
         .get(`/users/${googleId}`)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
-          res.body.email.should.equal('denny.ho@gpmail.org');
+          res.body.email.should.equal('jade.jost@gmail.org');
           done();
         });
     });
