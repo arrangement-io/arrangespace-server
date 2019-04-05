@@ -72,14 +72,17 @@ exports.renderSnapshot = function (snapshot, containers, items) {
   let sider = [snapshot.name, 'car', 'driver', 'passenger'];
   output.push(sider);
 
-  for (let container of snapshot.snapshotContainers) {
-    let containerAndItems = ['', this.retrieveName(container._id, containers)];
+  // Arrangements with only a single snapshot will not have snapshotContainer defined
+  if (snapshot.snapshotContainer) {
+    for (let container of snapshot.snapshotContainers) {
+      let containerAndItems = ['', this.retrieveName(container._id, containers)];
 
-    for (let item of container.items) {
-      containerAndItems.push(this.retrieveName(item, items));
+      for (let item of container.items) {
+        containerAndItems.push(this.retrieveName(item, items));
+      };
+      output.push(containerAndItems);
     };
-    output.push(containerAndItems);
-  };
+  }
 
   let unassignedItems = ['', 'unassigned'];
   for (let item of snapshot.unassigned) {
