@@ -3,13 +3,11 @@ const express = require('express');
 const app = module.exports = express();
 const bodyParser = require('body-parser');
 const authMiddleware = require('./utils/auth');
-const validator = require('express-validator');
 let path = require('path');
 let db = require('./db/database_mongo');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(validator());
 
 // add some security-related headers to the response
 app.use(helmet());

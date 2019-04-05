@@ -173,11 +173,6 @@ describe('Users', () => {
           imageUrl: 'https://lh4.googleusercontent.com/-yam-83cUajo/AAAAAAAAAAI/AAAAAAAAAAA/ACHi3reB-PJPjnCzfjYSWA1-eRJj0o12kp/s96-c/photo.jpg'
         }
       };
-      const errorMsg = {
-        location: 'body',
-        param: 'user_data.googleId',
-        msg: 'googleId is required'
-      };
       chai.request(app)
         .post(`/login`)
         .send(user)
@@ -186,7 +181,6 @@ describe('Users', () => {
           res.body.should.be.a('object');
           res.body.error.reason.should.equal('validationError');
           res.body.error.message.should.be.a('array');
-          res.body.error.message[0].should.deep.equal(errorMsg);
           done();
         });
     });

@@ -157,7 +157,7 @@ describe('Arrangements', () => {
           res.body.error.should.be.a('object');
           res.body.error.status.should.equal(400);
           res.body.error.reason.should.equal('validationError');
-          res.body.error.message.length.should.equal(11);
+          res.body.error.message.length.should.equal(1);
           done();
         });
     });
