@@ -6,7 +6,7 @@ exports.createArrangement = function (request, response) {
   let payload = request.body;
 
   api.createArrangement(arrangementId, payload, request, response).then(results => {
-    core.sendSuccessResponse(results, response);
+    core.sendResponse(results, response);
   });
 };
 

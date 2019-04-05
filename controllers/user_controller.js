@@ -3,7 +3,7 @@ let core = require('../api/internal/core');
 
 exports.getUsers = function (request, response) {
   api.getUsers(request).then(results => {
-    core.sendSuccessResponse(results, response);
+    core.sendResponse(results, response);
   });
 };
 
