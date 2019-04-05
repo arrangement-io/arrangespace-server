@@ -5,9 +5,6 @@ const app = require('../index');
 chai.use(chaiHttp);
 chai.should();
 
-process.env.MONGODB_URI = 'mongodb://localhost';
-process.env.MONGODB_NAME = 'test';
-
 describe('Users', () => {
   describe('GET /users', () => {
     it('should get all users', (done) => {
@@ -16,7 +13,7 @@ describe('Users', () => {
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('array');
-          res.body.should.have.lengthOf(13);
+          res.body.should.have.lengthOf(12);
           res.body[0].should.be.a('object');
           done();
         });

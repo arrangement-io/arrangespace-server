@@ -15,7 +15,7 @@
   "scripts": {
     "start": "node .",
     "lint": "eslint -c .eslintrc.json .",
-    "test": "mocha test/ --exit"
+    "test": "mocha --require test/setup.js test/ --exit"
   },
   "devDependencies": {
     "chai": "^4.2.0",

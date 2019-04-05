@@ -12,6 +12,7 @@ exports.connect = async function (uri) {
     User = db.collection('users');
     Arrangement = db.collection('arrangement');
     app.emit('ready');
+    console.log('Successfully made connection to database...');
   } catch (error) {
     console.log(error);
   }

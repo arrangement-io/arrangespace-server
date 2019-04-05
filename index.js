@@ -26,9 +26,10 @@ app.get('/docs', (request, response) => {
 });
 
 const port = process.env.PORT || 3000;
-app.on('ready', function() {
+app.on('ready', function () {
   app.listen(port, function () {
     console.log(`Server listening on port ${port}!`);
+    app.emit('started');
   });
 });
 
