@@ -1,0 +1,7 @@
+{
+    "version": 2,
+    "name": "arrangespace-server",
+    "builds": [
+        { "src": "index.js", "use": "@now/node-server" }
+    ]
+}
