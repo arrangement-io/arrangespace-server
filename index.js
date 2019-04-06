@@ -1,8 +1,8 @@
-'use strict'
+'use strict';
 const helmet = require('helmet');
 const express = require('express');
 const app = express();
-module.exports = app
+module.exports = app;
 const bodyParser = require('body-parser');
 const authMiddleware = require('./utils/auth');
 let path = require('path');
