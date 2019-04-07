@@ -1,6 +1,8 @@
+'use strict';
 const helmet = require('helmet');
 const express = require('express');
-const app = module.exports = express();
+const app = express();
+module.exports = app;
 const bodyParser = require('body-parser');
 const authMiddleware = require('./utils/auth');
 let path = require('path');
@@ -18,6 +20,7 @@ app.use(express.static('doc'));
 require('./routes/session_routes')(app);
 require('./routes/user_routes')(app);
 require('./routes/arrangement_routes')(app);
+require('./routes/health_routes')(app);
 
 app.get('/docs', (request, response) => {
   response.sendFile(path.join(__dirname, '/doc/index.html'));
