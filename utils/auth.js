@@ -1,6 +1,5 @@
 const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client('206945578523-0h8t8i7k5d09j0vg31ncspa4pbrddff6.apps.googleusercontent.com');
-let core = require('../api/internal/core');
 
 module.exports = async function (request, response, next) {
   try {
@@ -18,7 +17,8 @@ module.exports = async function (request, response, next) {
 
     const payload = ticket.getPayload();
     const googleId = payload['sub'];
-    console.log(`API request from ${googleId}`)
+
+    console.log(`API request from ${googleId}`);
     next(googleId);
   } catch (error) {
     next(error.message);
