@@ -42,6 +42,18 @@ exports.sendResponse = function (results, response) {
   this.sendSuccessResponse(results, response);
 };
 
+exports.sendUnauthorizedResponse = function (response) {
+  let results = {
+    error: {
+      status: 401,
+      reason: 'Unauthorized',
+      message: 'Wrong credentials'
+    }
+  };
+
+  this.sendFailureResponse(results, response);
+};
+
 exports.sendFailure = function (status, reason = 'standardError', message, resolve) {
   if (resolve) {
     let results = {

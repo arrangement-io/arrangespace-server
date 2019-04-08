@@ -18,8 +18,9 @@ module.exports = async function (request, response, next) {
     const payload = ticket.getPayload();
     const googleId = payload['sub'];
 
+    request.googleId = googleId;
     console.log(`API request from ${googleId}`);
-    next(googleId);
+    next();
   } catch (error) {
     next(error.message);
   }
