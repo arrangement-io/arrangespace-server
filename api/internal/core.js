@@ -108,6 +108,20 @@ exports.validatePostRequest = function (model, request) {
           this.sendFailure(400, 'validationError', errors, resolve);
           return;
         }
+
+        // Authorization checks after validation
+        if (model.collectionName === 'arrangement') {
+          if (data.owner !== request.googleId) {
+            this.sendFailure(401, 'Unauthorized', 'Wrong credentials', resolve);
+            return;
+          }
+        } else {
+          if (data.user_data.googleId !== request.googleId) {
+            this.sendFailure(401, 'Unauthorized', 'Wrong credentials', resolve);
+            return;
+          }
+        }
+
         resolve({});
       })();
     } catch (error) {
