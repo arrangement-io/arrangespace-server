@@ -10,11 +10,6 @@ exports.getUsers = function (request, response) {
 exports.getUser = function (request, response) {
   let userId = request.params.id;
 
-  if (userId !== request.googleId) {
-    core.sendUnauthorizedResponse(response);
-    return;
-  }
-
   api.getUser(userId, request).then(results => {
     core.sendResponse(results, response);
   });
@@ -22,11 +17,6 @@ exports.getUser = function (request, response) {
 
 exports.getUserArrangements = function (request, response) {
   let userId = request.params.id;
-
-  if (userId !== request.googleId) {
-    core.sendUnauthorizedResponse(response);
-    return;
-  }
 
   api.getUserArrangements(userId, request).then(results => {
     core.sendResponse(results, response);
