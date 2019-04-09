@@ -1,4 +1,14 @@
 const validate = require('./schema');
+var { logger } = require('../../utils/logger');
+
+// Outputs to console if log level set to debug
+exports.debug = function (message) {
+  logger.debug(message);
+};
+
+exports.error = function (error) {
+  logger.error(error);
+};
 
 exports.sendResourceNotFound = function (request, response) {
   response.status(404);
