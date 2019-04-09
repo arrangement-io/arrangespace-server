@@ -60,6 +60,17 @@ module.exports = async function (request, response, next) {
 
     next();
   } catch (error) {
+    if (error.message.indexOf('Token used too late') !== -1) {
+      let error = {
+        error: {
+          status: 401,
+          reason: 'Unauthorized',
+          message: 'Token expired'
+        }
+      };
+      core.sendFailureResponse(error, response);
+      return;
+    }
     next(error.message);
   }
 };
