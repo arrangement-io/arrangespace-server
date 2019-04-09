@@ -3,13 +3,14 @@ let User = null;
 let Arrangement = null;
 let mCore = require('./core_mongo');
 var app = require('../index');
+const { MONGODB_URL, MONGODB_NAME } = process.env;
 
-exports.connect = async function (uri) {
+exports.connect = async function () {
   try {
-    if (uri) {
+    if (MONGODB_URL && MONGODB_NAME) {
       mCore.registerResourceHandlers();
-      let client = await MongoClient.connect(uri, { useNewUrlParser: true });
-      let db = await client.db(process.env.MONGODB_NAME);
+      let client = await MongoClient.connect(`mongodb://${MONGODB_URL}`, { useNewUrlParser: true });
+      let db = await client.db(MONGODB_NAME);
       User = db.collection('users');
       Arrangement = db.collection('arrangement');
       app.emit('ready');

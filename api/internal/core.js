@@ -42,6 +42,18 @@ exports.sendResponse = function (results, response) {
   this.sendSuccessResponse(results, response);
 };
 
+exports.sendUnauthorizedResponse = function (message, response) {
+  let results = {
+    error: {
+      status: 401,
+      reason: 'Unauthorized',
+      message: message
+    }
+  };
+
+  this.sendFailureResponse(results, response);
+};
+
 exports.sendFailure = function (status, reason = 'standardError', message, resolve) {
   if (resolve) {
     let results = {
@@ -96,6 +108,20 @@ exports.validatePostRequest = function (model, request) {
           this.sendFailure(400, 'validationError', errors, resolve);
           return;
         }
+
+        // Authorization checks after validation
+        if (model.collectionName === 'arrangement') {
+          if (data.owner !== request.googleId) {
+            this.sendFailure(401, 'Unauthorized', 'Wrong credentials', resolve);
+            return;
+          }
+        } else {
+          if (data.user_data.googleId !== request.googleId) {
+            this.sendFailure(401, 'Unauthorized', 'Wrong credentials', resolve);
+            return;
+          }
+        }
+
         resolve({});
       })();
     } catch (error) {

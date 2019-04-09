@@ -3,7 +3,7 @@
 ```shell
 $ yarn install
 $ export MONGODB_NAME=<db name>
-$ export MONGODB_URI=mongodb://[username:password@]host1[:port1][/[database][?options]]
+$ export MONGODB_URL=[username:password@]host1[:port1][/[database][?options]]
 $ npm start
 
 Server listening on port 3000!
