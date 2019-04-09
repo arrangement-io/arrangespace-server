@@ -1,5 +1,7 @@
 const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client('206945578523-0h8t8i7k5d09j0vg31ncspa4pbrddff6.apps.googleusercontent.com');
+const core = require('../api/internal/core');
+const WHITELIST_DOMAINS = ['gpmail.org'];
 
 module.exports = async function (request, response, next) {
   try {
@@ -17,9 +19,21 @@ module.exports = async function (request, response, next) {
 
     const payload = ticket.getPayload();
     const googleId = payload['sub'];
+    const domain = payload['hd'];
+
+    if (WHITELIST_DOMAINS.indexOf(domain) === -1) {
+      let error = {
+        error: {
+          status: 401,
+          reason: 'Unauthorized',
+          message: 'Invalid domain'
+        }
+      };
+      core.sendFailureResponse(error, response);
+      return;
+    }
 
     request.googleId = googleId;
-    console.log(`API request from ${googleId}`);
     next();
   } catch (error) {
     next(error.message);
