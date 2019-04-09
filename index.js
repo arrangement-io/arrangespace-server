@@ -34,4 +34,4 @@ app.on('ready', function () {
   });
 });
 
-db.connect(process.env.MONGODB_URI);
+db.connect();

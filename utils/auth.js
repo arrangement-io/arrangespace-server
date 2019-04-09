@@ -1,5 +1,6 @@
 const { OAuth2Client } = require('google-auth-library');
-const client = new OAuth2Client('206945578523-0h8t8i7k5d09j0vg31ncspa4pbrddff6.apps.googleusercontent.com');
+const { GOOGLE_CLIENT_ID } = process.env;
+const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 const core = require('../api/internal/core');
 const WHITELIST_DOMAINS = ['gpmail.org'];
 
@@ -14,7 +15,7 @@ module.exports = async function (request, response, next) {
     // https://developers.google.com/identity/sign-in/web/backend-auth
     const ticket = await client.verifyIdToken({
       idToken: token,
-      audience: '206945578523-0h8t8i7k5d09j0vg31ncspa4pbrddff6.apps.googleusercontent.com'
+      audience: GOOGLE_CLIENT_ID
     });
 
     const payload = ticket.getPayload();
