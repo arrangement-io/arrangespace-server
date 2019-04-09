@@ -1,6 +1,12 @@
 const validate = require('./schema');
 var { logger } = require('../../utils/logger');
 
+let core = this;
+
+exports.log = function (message) {
+  logger.info(message);
+};
+
 // Outputs to console if log level set to debug
 exports.debug = function (message) {
   logger.debug(message);
@@ -76,7 +82,7 @@ exports.sendFailure = function (status, reason = 'standardError', message, resol
 
     resolve(results);
   } else {
-    console.log('Missing resolve: ' + message);
+    core.log('Missing resolve: ' + message);
   }
 };
 
@@ -102,6 +108,7 @@ exports.validateGetRequest = function (model, request) {
         }
       })();
     } catch (error) {
+      core.error(error);
       resolve(error);
     };
   });
@@ -135,6 +142,7 @@ exports.validatePostRequest = function (model, request) {
         resolve({});
       })();
     } catch (error) {
+      core.error(error);
       resolve(error);
     };
   });

@@ -13,7 +13,8 @@
     "mongoose": "^5.4.20",
     "passport": "^0.4.0",
     "passport-google-oauth": "^2.0.0",
-    "winston": "^3.2.1"
+    "winston": "^3.2.1",
+    "winston-papertrail": "^1.0.5"
   },
   "scripts": {
     "start": "node .",

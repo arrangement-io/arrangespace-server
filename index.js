@@ -6,6 +6,7 @@ module.exports = app;
 const bodyParser = require('body-parser');
 const authMiddleware = require('./utils/auth');
 const log = require('./utils/logger');
+const core = require('./api/internal/core');
 let path = require('path');
 let db = require('./db/database_mongo');
 
@@ -35,7 +36,7 @@ app.use(log.errorLogger);
 const port = process.env.PORT || 3000;
 app.on('ready', function () {
   app.listen(port, function () {
-    console.log(`Server listening on port ${port}!`);
+    core.log(`Server listening on port ${port}!`);
     app.emit('started');
   });
 });

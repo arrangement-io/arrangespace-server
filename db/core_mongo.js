@@ -31,6 +31,7 @@ exports.getResource = function (model, query, request = null) {
           }
         });
       } catch (error) {
+        core.error(error.stack);
         core.resolveCatchError(error.stack, resolve);
       };
     })();
@@ -58,6 +59,7 @@ exports.getResources = function (model, query, request) {
           }
         });
       } catch (error) {
+        core.error(error.stack);
         core.resolveCatchError(error.stack, resolve);
       }
     })();
@@ -79,6 +81,7 @@ exports.updateResource = function (model, payload, key, request) {
         let object = await resourceHandler(model, payload);
         resolve(object);
       } catch (error) {
+        core.error(error.stack);
         core.resolveCatchError(error.stack, resolve);
       };
     })();
@@ -97,6 +100,7 @@ exports.updateResourceByGoogleId = function (model, payload) {
         }
       });
     } catch (error) {
+      core.error(error.stack);
       resolve(null);
     }
   });
@@ -113,6 +117,7 @@ exports.updateResourceById = function (model, payload) {
         }
       });
     } catch (error) {
+      core.error(error.stack);
       resolve(null);
     }
   });
