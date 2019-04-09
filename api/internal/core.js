@@ -42,12 +42,12 @@ exports.sendResponse = function (results, response) {
   this.sendSuccessResponse(results, response);
 };
 
-exports.sendUnauthorizedResponse = function (response) {
+exports.sendUnauthorizedResponse = function (message, response) {
   let results = {
     error: {
       status: 401,
       reason: 'Unauthorized',
-      message: 'Wrong credentials'
+      message: message
     }
   };
 

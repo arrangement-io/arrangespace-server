@@ -9,27 +9,13 @@ module.exports = async function (request, response, next) {
     if (request.path !== '/health') {
       const { authorization } = request.headers;
       if (!authorization) {
-        let error = {
-          error: {
-            status: 401,
-            reason: 'Unauthorized',
-            message: 'You must send an Authorization header'
-          }
-        };
-        core.sendFailureResponse(error, response);
+        core.sendUnauthorizedResponse('You must send an Authorization header', response);
         return;
       }
 
       const [authType, token] = authorization.trim().split(' ');
       if (authType !== 'Bearer') {
-        let error = {
-          error: {
-            status: 401,
-            reason: 'Unauthorized',
-            message: 'Expected a Bearer token'
-          }
-        };
-        core.sendFailureResponse(error, response);
+        core.sendUnauthorizedResponse('Expected a Bearer token', response);
         return;
       }
 
@@ -44,14 +30,7 @@ module.exports = async function (request, response, next) {
       const domain = payload['hd'];
 
       if (WHITELIST_DOMAINS.indexOf(domain) === -1) {
-        let error = {
-          error: {
-            status: 401,
-            reason: 'Unauthorized',
-            message: 'Invalid domain'
-          }
-        };
-        core.sendFailureResponse(error, response);
+        core.sendUnauthorizedResponse('Invalid domain', response);
         return;
       }
 
@@ -61,14 +40,7 @@ module.exports = async function (request, response, next) {
     next();
   } catch (error) {
     if (error.message.indexOf('Token used too late') !== -1) {
-      let error = {
-        error: {
-          status: 401,
-          reason: 'Unauthorized',
-          message: 'Token expired'
-        }
-      };
-      core.sendFailureResponse(error, response);
+      core.sendUnauthorizedResponse('Token expired', response);
       return;
     }
     next(error.message);
