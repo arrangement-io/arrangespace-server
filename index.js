@@ -24,6 +24,7 @@ app.use(express.static('doc'));
 require('./routes/session_routes')(app);
 require('./routes/user_routes')(app);
 require('./routes/arrangement_routes')(app);
+require('./routes/cluster_routes')(app);
 require('./routes/health_routes')(app);
 
 app.get('/docs', (request, response) => {

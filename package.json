@@ -4,15 +4,16 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "@turf/turf": "^5.1.6",
     "convert-array-to-csv": "^1.0.5",
     "express": "^4.16.4",
     "express-winston": "^3.1.0",
+    "geojson": "^0.5.0",
     "google-auth-library": "^3.1.2",
     "helmet": "^3.16.0",
     "joi": "^14.3.1",
     "mongoose": "^5.4.20",
-    "passport": "^0.4.0",
-    "passport-google-oauth": "^2.0.0",
+    "node-geocoder": "^3.22.0",
     "winston": "^3.2.1",
     "winston-papertrail": "^1.0.5"
   },
