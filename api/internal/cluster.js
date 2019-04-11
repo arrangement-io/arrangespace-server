@@ -40,7 +40,7 @@ function getClusters (request) {
           formatter: null
         };
         let body = request.body;
-        let data = body.locations;
+        let data = body.items;
 
         // Geocode human readable addresses into latitude and longitude
         let geocoder = NodeGeocoder(geocodeOptions);
@@ -57,7 +57,7 @@ function getClusters (request) {
           }
 
           let points = GeoJSON.parse(data, { Point: ['lng', 'lat'] });
-          let options = { numberOfClusters: body.cars.length };
+          let options = { numberOfClusters: body.containers.length };
           // Magic clustering algorithm
           let clusters = turf.clustersKmeans(points, options);
 
@@ -126,7 +126,7 @@ function getClusters (request) {
             }
           ]
           */
-          results.cars = sortIntoCars(results.clusters, body.cars);
+          results.containers = sortIntoCars(results.clusters, body.containers);
 
           resolve(results);
         });
