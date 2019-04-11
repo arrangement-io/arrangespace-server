@@ -128,6 +128,23 @@ function getClusters (request) {
           */
           results.containers = sortIntoCars(results.clusters, body.containers);
 
+          let includePolygon = true;
+          if (Object.keys(body).includes('options') && body.options.includePolygon === false) {
+            includePolygon = false;
+          }
+
+          // Include polygon feature in FeatureCollection to group location markers.
+          //    If cluster only has 2 locations, then return a lineString feature.
+          //    If cluster only has 1 location, then return null.
+          if (includePolygon) {
+            for (const [clusterId, contents] of Object.entries(results.clusters)) {
+              let polygon = polygonFromCluster(clusterId, contents);
+              if (polygon) {
+                results.feature_collection.features.push(polygon);
+              }
+            }
+          }
+
           resolve(results);
         });
       })();
@@ -137,6 +154,20 @@ function getClusters (request) {
     }
   });
 };
+
+function polygonFromCluster (clusterId, cluster) {
+  if (cluster.length >= 3) {
+    let coords = [];
+    for (let loc of cluster) {
+      coords.push(loc.coordinates);
+    }
+    // First and last coordinates must be the same to make a linear "ring"
+    coords.push(coords[0]);
+    return turf.polygon([coords], { cluster: clusterId });
+  } else if (cluster.length === 2) {
+    return turf.lineString([cluster[0].coordinates, cluster[1].coordinates], { cluster: clusterId });
+  }
+}
 
 function sortIntoCars (clusterDict, cars) {
   let clusterSizeObject = [];

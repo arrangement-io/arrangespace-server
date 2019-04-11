@@ -48,7 +48,10 @@ const Cluster = require('./internal/cluster');
  *        "size": 8,
  *        "_id": "iH34RhRuY"
  *      }
- *    ]
+ *    ],
+ *    "options": {
+ *      "includePolygon": true
+ *    }
  *  }
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
