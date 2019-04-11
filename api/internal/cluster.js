@@ -56,7 +56,7 @@ function getClusters (request) {
             data[resultToDataIndex].lng = result.value['0'].longitude;
           }
 
-          let points = GeoJSON.parse(data, { Point: ['lng', 'lat'] });
+          let points = GeoJSON.parse(data, { Point: ['lat', 'lng'] });
           let options = { numberOfClusters: body.containers.length };
           // Magic clustering algorithm
           let clusters = turf.clustersKmeans(points, options);
