@@ -4,6 +4,7 @@
 $ yarn install
 $ export MONGODB_NAME=<db name>
 $ export MONGODB_URL=[username:password@]host1[:port1][/[database][?options]]
+$ export GOOGLE_CLIENT_ID=<google client id>
 $ npm start
 
 Server listening on port 3000!
@@ -30,4 +31,13 @@ $ mongoimport -d test -c arrangement ./test/seed/arrangement_seed.json
 
 ```shell
 $ npm test
+```
+
+# Deploy to Now
+
+```shell
+$ now secrets add mongodb-url "mongo-url-here"
+$ now secrets add mongodb-name "db-name-here"
+$ now secrets add google-client-id "client-id-here"
+$ now
 ```
