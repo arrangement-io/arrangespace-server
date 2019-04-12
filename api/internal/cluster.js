@@ -1,24 +1,24 @@
 const core = require('./core');
-const sort = require('fast-sort');
 const turf = require('@turf/turf');
 const NodeGeocoder = require('node-geocoder');
 const GeoJSON = require('geojson');
 const { GOOGLE_MAPS_API_KEY } = process.env;
+const defaultOpts = {
+  includePolygon: true,
+  optimizeSpace: false, // Use as few cars as possible
+  optimizeComfort: true, // Use as many cars as possible
+  optimizeSize: false // Fill up cars as much as possible
+};
+const polyProps = [
+  { fill: '#00ffff', stroke: '#0000ff' },
+  { fill: '#ff0000', stroke: '#800000' },
+  { fill: '#00ff00', stroke: '#008000' },
+  { fill: '#ffff00', stroke: '#ffff00' },
+  { fill: '#ff00ff', stroke: '#800080' }
+];
 
-/**
-  Returns
-  {
-    feature_collection: FeatureCollection,
-    clusters: {
-      "0": Array of Location Objects,
-      "1": Array of Location Objects
-    },
-    cars: Array of Car Objects with assigned cluster
-  }
-
-  Makes the assumption that each cluster will fit into a car. If not, UI
-  should show error for that particular space, which the user can take action on.
-*/
+//  Makes the assumption that each cluster will fit into a car. If not, UI
+//    should show error for that particular space, which the user can take action on.
 exports.create = function (request) {
   return new Promise(resolve => {
     (async () => {
@@ -34,119 +34,85 @@ function getClusters (request) {
     try {
       (async () => {
         let results = {};
-        let geocodeOptions = {
-          provider: 'google',
-          apiKey: GOOGLE_MAPS_API_KEY,
-          formatter: null
-        };
         let body = request.body;
-        let data = body.items;
+        let options = { ...defaultOpts, ...body.options };
 
         // Geocode human readable addresses into latitude and longitude
-        let geocoder = NodeGeocoder(geocodeOptions);
-        geocoder.batchGeocode(data, function (err, res) {
-          if (err) {
-            core.error(err);
-            core.sendFailure(500, 'unknownError', 'Could not geocode provided addresses.', resolve);
-            return;
-          }
-          for (let result of res) {
-            let resultToDataIndex = res.indexOf(result);
-            data[resultToDataIndex].lat = result.value['0'].latitude;
-            data[resultToDataIndex].lng = result.value['0'].longitude;
-          }
+        let data = await toCoordinates(body.items);
 
-          let points = GeoJSON.parse(data, { Point: ['lat', 'lng'] });
-          let options = { numberOfClusters: body.containers.length };
-          // Magic clustering algorithm
-          let clusters = turf.clustersKmeans(points, options);
+        // Batch function to turn array of objects with geometry data into geoJSON points.
+        let points = GeoJSON.parse(data, { Point: ['lat', 'lng'] });
+        // let points = turf.randomPoint(21, { bbox: [-180, -90, 180, 90] })
 
-          // geoJSON FeatureCollection
-          results.feature_collection = clusters;
-          results.clusters = {};
+        /**
+        DETERMINE K-VALUE
+        */
 
-          // Each location is a feature
-          for (let feature of clusters.features) {
-            let clusterId = feature.properties.cluster;
-            let locationId = feature.properties._id;
-            let locationCoords = feature.geometry.coordinates;
-            let locationObject = {
-              _id: locationId,
-              coordinates: locationCoords
-            };
+        let k = null;
+        // Set k to # of containers available
+        if (options.optimizeComfort) {
+          k = body.containers.length;
+        } else if (options.optimizeSpace) {
+          // Set k to minimum # of containers needed for total # of items.
+          // Fill up biggest containers first
+          let descArrayOfContainers = body.containers.sort((a, b) => b.size - a.size);
+          let x = 1;
+          let totalSpace = descArrayOfContainers[0].size;
 
-            /**
-            "clusters":{
-            "0":[
-               {
-                  "id":"zfekidfe",
-                  "coordinates":[
-                     37.76761219999999,
-                     -122.2513694
-                  ]
-               }
-            ]
-            */
-            if (!results.clusters[clusterId]) {
-              results.clusters[clusterId] = [];
-            }
-
-            results.clusters[clusterId].push(locationObject);
-          }
-
-          /**
-          "cars":[
-            {
-              "name": "Bryan Van",
-              "size": 8,
-              "_id": "iH34RhRuY",
-              "cluster": [
-                {
-                  "_id":"abcdefgh",
-                  "coordinates": [
-                    37.7379044,
-                    -122.2394204
-                  ]
-                },
-                {
-                  "_id":"jjiefjsk",
-                  "coordinates": [
-                    37.73955,
-                    -122.2329
-                  ]
-                },
-                {
-                  "_id":"llblah",
-                  "coordinates": [
-                    37.7336545,
-                    -122.2327653
-                  ]
-                }
-              ]
-            }
-          ]
-          */
-          results.containers = sortIntoCars(results.clusters, body.containers);
-
-          let includePolygon = true;
-          if (Object.keys(body).includes('options') && body.options.includePolygon === false) {
-            includePolygon = false;
-          }
-
-          // Include polygon feature in FeatureCollection to group location markers.
-          //    If cluster only has 2 locations, then return a lineString feature.
-          //    If cluster only has 1 location, then return null.
-          if (includePolygon) {
-            for (const [clusterId, contents] of Object.entries(results.clusters)) {
-              let polygon = polygonFromCluster(clusterId, contents);
-              if (polygon) {
-                results.feature_collection.features.push(polygon);
-              }
+          while (body.items.length > totalSpace) {
+            if (descArrayOfContainers[x]) {
+              totalSpace += descArrayOfContainers[x].size;
+              x++;
+            } else {
+              core.sendFailure(400, 'badRequest', 'You do not have enough containers!', resolve);
+              break;
             }
           }
+          k = x;
+        } else if (options.optimizeSize) {
+          // Fill up car size with items closest to each other
+          resolve({});
+          return;
+        }
 
-          resolve(results);
-        });
+        // Safety catch
+        if (k > body.containers.length) {
+          k = body.containers.length;
+        }
+
+        /**
+        CREATE THE CLUSTERS
+        */
+
+        // Returns geoJSON FeatureCollection
+        let clustered = clustersKMeans(points, k);
+        if (!clustered) {
+          core.sendFailure(500, 'unknownError', 'Could not geocluster given locations.', resolve);
+        }
+
+        results.feature_collection = clustered;
+
+        let clustersResult = parseClustered(clustered);
+
+        // Add polygon features to FeatureCollection
+        if (options.includePolygon) {
+          let polygons = polygonsFromClustered(clustered);
+          if (polygons) {
+            polygons.forEach((currentPolygon) => {
+              results.feature_collection.features.push(currentPolygon);
+            });
+          }
+        }
+        results.clusters = clustersResult;
+
+        /**
+        SORT CLUSTERS INTO CONTAINERS
+        */
+
+        // Sort biggest clusters into biggest cars
+        results.containers = sortIntoCars(clustersResult, body.containers);
+
+        resolve(results);
       })();
     } catch (error) {
       core.error(error);
@@ -155,45 +121,103 @@ function getClusters (request) {
   });
 };
 
-function polygonFromCluster (clusterId, cluster) {
-  if (cluster.length >= 3) {
-    let coords = [];
-    for (let loc of cluster) {
-      coords.push(loc.coordinates);
-    }
-    // First and last coordinates must be the same to make a linear "ring"
-    coords.push(coords[0]);
-    return turf.polygon([coords], { cluster: clusterId });
-  } else if (cluster.length === 2) {
-    return turf.lineString([cluster[0].coordinates, cluster[1].coordinates], { cluster: clusterId });
-  }
+function clustersKMeans (points, kMeans) {
+  let options = { numberOfClusters: kMeans };
+
+  // Magic clustering algorithm
+  return turf.clustersKmeans(points, options);
 }
 
-function sortIntoCars (clusterDict, cars) {
-  let clusterSizeObject = [];
-  for (const [cluster, contents] of Object.entries(clusterDict)) {
-    // Intermediate object mapping clusterId to cluster size
-    let object = {
-      clusterId: cluster,
-      size: contents.length
-    };
-    clusterSizeObject.push(object);
-  }
+// Parse a feature collection and create object with clusters mapped to items
+function parseClustered (clustered) {
+  let results = {};
+  let collection = [];
+  turf.clusterEach(clustered, 'cluster', function (cluster, clusterValue, currentIndex) {
+    let clusterContents = [];
 
-  // Sort biggest clusters into biggest cars
-  let sortedCars = sortArrayOfObjects(cars);
-  let sortedClusters = sortArrayOfObjects(clusterSizeObject);
+    turf.featureEach(cluster, function (currentFeature, featureIndex) {
+      let item = {};
+      let geoCoords = currentFeature.geometry.coordinates;
+      item._id = currentFeature.properties._id;
+      item.name = currentFeature.properties.name;
+      item.cluster = currentIndex;
+      // We want [lat, lng]. Don't mutate original.
+      item.coordinates = geoCoords.slice().reverse();
+      clusterContents.push(item);
+    });
 
-  sortedCars.forEach((car, i) => {
-    let clusterIdMap = sortedClusters[i].clusterId;
-    car.cluster = clusterDict[clusterIdMap];
+    collection.push(clusterContents);
+  });
+  results.size = collection.length;
+  results.results = collection;
+  return results;
+}
+
+function polygonsFromClustered (clustered) {
+  let result = [];
+  turf.clusterEach(clustered, 'cluster', function (cluster, clusterValue, currentIndex) {
+    let coords = turf.coordAll(cluster);
+    let props = null;
+    if (polyProps[currentIndex]) {
+      props = { ...{ cluster: clusterValue, 'stroke-width': 1 }, ...polyProps[currentIndex] };
+    } else {
+      props = { ...{ cluster: clusterValue, 'stroke-width': 1 }, ...polyProps[4] };
+    }
+
+    // let props = { cluster: clusterValue };
+    let shape = null;
+    if (coords.length >= 3) {
+      // First and last coordinates must be the same to make a linear "ring"
+      coords.push(coords[0]);
+      shape = turf.polygon([coords], props);
+    } else if (coords.length === 2) {
+      shape = turf.lineString(coords, props);
+    }
+
+    if (shape) {
+      result.push(shape);
+    }
+  });
+  return result;
+}
+
+function sortIntoCars (clusters, containers) {
+  // Descending order
+  let sortedClusters = clusters.results.sort((a, b) => b.length - a.length);
+  let sortedContainers = containers.sort((a, b) => b.size - a.size);
+
+  sortedContainers.forEach((currentContainer, i) => {
+    if (sortedClusters[i]) {
+      currentContainer.cluster = sortedClusters[i];
+    }
   });
 
-  return sortedCars;
+  return sortedContainers;
 };
 
-// Sort objects in array by size value
-function sortArrayOfObjects (array) {
-  sort(array).desc(o => o.size);
-  return array;
+function toCoordinates (data) {
+  return new Promise(resolve => {
+    try {
+      (async () => {
+        let geocodeOptions = {
+          provider: 'google',
+          apiKey: GOOGLE_MAPS_API_KEY,
+          formatter: null
+        };
+        let geocoder = NodeGeocoder(geocodeOptions);
+        let res = await geocoder.batchGeocode(data);
+
+        for (let result of res) {
+          let resultToDataIndex = res.indexOf(result);
+          data[resultToDataIndex].lat = result.value['0'].latitude;
+          data[resultToDataIndex].lng = result.value['0'].longitude;
+        }
+
+        resolve(data);
+      })();
+    } catch (error) {
+      core.error(error);
+      core.resolveCatchError(error, resolve);
+    }
+  });
 }
