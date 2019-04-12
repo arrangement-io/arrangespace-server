@@ -5,8 +5,8 @@ const GeoJSON = require('geojson');
 const { GOOGLE_MAPS_API_KEY } = process.env;
 const defaultOpts = {
   includePolygon: true,
-  optimizeSpace: false, // Use as few cars as possible
-  optimizeComfort: true, // Use as many cars as possible
+  optimizeSpace: true, // Use as few cars as possible
+  optimizeComfort: false, // Use as many cars as possible
   optimizeSize: false // Fill up cars as much as possible
 };
 const polyProps = [
