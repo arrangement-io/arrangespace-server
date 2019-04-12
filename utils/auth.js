@@ -34,11 +34,13 @@ module.exports = async function (request, response, next) {
         return;
       }
 
+      core.debug(`Received API request from ${googleId}`);
       request.googleId = googleId;
     }
 
     next();
   } catch (error) {
+    core.debug(error.message);
     if (error.message.indexOf('Token used too late') !== -1) {
       core.sendUnauthorizedResponse('Token expired', response);
       return;

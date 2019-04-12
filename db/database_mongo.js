@@ -2,6 +2,7 @@ var MongoClient = require('mongodb').MongoClient;
 let User = null;
 let Arrangement = null;
 let mCore = require('./core_mongo');
+const core = require('../api/internal/core');
 var app = require('../index');
 const { MONGODB_URL, MONGODB_NAME } = process.env;
 
@@ -14,12 +15,12 @@ exports.connect = async function () {
       User = db.collection('users');
       Arrangement = db.collection('arrangement');
       app.emit('ready');
-      console.log('Successfully made connection to database...');
+      core.log('Successfully made connection to database...');
     } else {
-      console.log('Please set MONGODB_URI and MONGODB_NAME before attempting to start the server.');
+      core.error('Please set MONGODB_URI and MONGODB_NAME before attempting to start the server.');
     }
   } catch (error) {
-    console.log(error);
+    core.error(error);
   }
 };
 
