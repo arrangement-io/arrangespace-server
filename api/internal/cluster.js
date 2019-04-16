@@ -225,6 +225,7 @@ function getNClosestPoints (points, n) {
   // Don't mutate original points
   let pointsCopy = core.cloneObject(points);
   let biggestCluster = [];
+  core.log(`Preparing to sort ${pointsCopy.features.length} items into container of size: ${n}`);
 
   // Get biggest cluster that will fit into n
   while (pointsCopy.features.length > n) {
@@ -237,8 +238,10 @@ function getNClosestPoints (points, n) {
     let biggestClusterCentroid = biggestCluster.features[0].properties.centroid;
     pointsCopy = biggestCluster;
 
+    core.log(`Found cluster with size: ${pointsCopy.features.length}`);
     // We found our match
     if (biggestCluster.features.length <= n) {
+      core.log('Found a match!');
       let remainingSpots = n - biggestCluster.features.length;
       if (remainingSpots > 0) {
         let pointsRemaining = getRemainingPoints(points, biggestCluster);
@@ -247,7 +250,8 @@ function getNClosestPoints (points, n) {
         for (let i = 0; i < remainingSpots; i++) {
           biggestCluster.features.push(sortedPointsRemaining.features[i]);
         }
-
+        return biggestCluster;
+      } else {
         return biggestCluster;
       }
     }
