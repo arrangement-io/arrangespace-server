@@ -42,7 +42,7 @@ function getClusters (request) {
 
         // Batch function to turn array of objects with geometry data into geoJSON points.
         let points = GeoJSON.parse(data, { Point: ['lat', 'lng'] });
-        // let points = turf.randomPoint(21, { bbox: [-180, -90, 180, 90] })
+        // let points = turf.randomPoint(16, { bbox: [-180, -90, 180, 90] })
 
         /**
         DETERMINE K-VALUE
@@ -70,8 +70,48 @@ function getClusters (request) {
           }
           k = x;
         } else if (options.optimizeSize) {
+          let sortResults = [];
+          let results = {};
           // Fill up car size with items closest to each other
-          resolve({});
+          let descArrayOfContainers = body.containers.sort((a, b) => b.size - a.size);
+          let pointsCopy = core.cloneObject(points);
+          let clusterIndex = 0;
+
+          descArrayOfContainers.forEach((currentContainer, containerIndex) => {
+            let nSize = currentContainer.size;
+            let sortedPoints = null;
+
+            if (pointsCopy.features.length > 0) {
+              sortedPoints = getNClosestPoints(pointsCopy, nSize);
+              // Add cluster metadata for container points
+              sortedPoints = clustersKMeans(sortedPoints, 1);
+
+              turf.featureEach(sortedPoints, function (currentFeature) {
+                currentFeature.properties.cluster = clusterIndex;
+              });
+              clusterIndex++;
+              pointsCopy = getRemainingPoints(pointsCopy, sortedPoints);
+
+              for (let feature of sortedPoints.features) {
+                sortResults.push(feature);
+              }
+
+              console.log(`going into container: ${sortedPoints.features.length} items`);
+            }
+          });
+
+          sortResults = turf.featureCollection(sortResults);
+          results.feature_collection = sortResults;
+          if (options.includePolygon) {
+            let polygons = polygonsFromClustered(sortResults);
+            if (polygons) {
+              polygons.forEach((currentPolygon) => {
+                results.feature_collection.features.push(currentPolygon);
+              });
+            }
+          }
+
+          resolve(results);
           return;
         }
 
@@ -126,6 +166,94 @@ function clustersKMeans (points, kMeans) {
 
   // Magic clustering algorithm
   return turf.clustersKmeans(points, options);
+}
+
+// Returns FeatureCollection of Points based on diff of two FeatureCollections
+function getRemainingPoints (all, overlap) {
+  let allCopy = core.cloneObject(all);
+  let overlapIds = [];
+  overlap.features.forEach((currentFeature) => {
+    if (!currentFeature.properties._id) {
+      core.error('Point does not have _id property! Make sure your request is valid.');
+    }
+    overlapIds.push(currentFeature.properties._id);
+  });
+
+  turf.featureEach(all, function (currentFeature, featureIndex) {
+    if (overlapIds.includes(currentFeature.properties._id)) {
+      // delete does not change other indices
+      delete allCopy.features[featureIndex];
+    }
+  });
+
+  let result = allCopy.features.filter(function (el) {
+    return el != null;
+  });
+
+  return turf.featureCollection(result);
+}
+
+function getLargestCluster (clustered, clusterSizes) {
+  let obj = clusterSizes;
+  let largestCluster = Object.keys(obj).reduce((a, b) => obj[a] > obj[b] ? a : b);
+  // Return biggest cluster as array of points
+  return turf.getCluster(clustered, { cluster: parseInt(largestCluster) });
+}
+
+// Sorts FeatureCollection of Points by distance to centroid
+function sortByDistanceToCentroid (centroid, points) {
+  if (points.features.length > 0) {
+    let pointsCopy = core.cloneObject(points);
+    let indexToDistance = [];
+    turf.featureEach(points, function (currentPoint, featureIndex) {
+      // indexToDistance[featureIndex] = turf.distance(currentPoint.geometry.coordinates, centroid);
+      indexToDistance.push({ featureIndex: featureIndex, distance: turf.distance(currentPoint.geometry.coordinates, centroid) });
+    });
+    let ascArrayOfDistance = indexToDistance.sort((a, b) => a.distance - b.distance);
+    let sortedResult = [];
+    ascArrayOfDistance.forEach((i) => {
+      sortedResult.push(pointsCopy.features[i.featureIndex]);
+    });
+
+    return turf.featureCollection(sortedResult);
+  } else {
+    core.error('cluster::sortByDistanceToCentroid(): No points given!');
+  }
+}
+
+function getNClosestPoints (points, n) {
+  // Don't mutate original points
+  let pointsCopy = core.cloneObject(points);
+  let biggestCluster = [];
+
+  // Get biggest cluster that will fit into n
+  while (pointsCopy.features.length > n) {
+    let clustered = clustersKMeans(pointsCopy, 2);
+    let clusterSizes = {};
+    turf.clusterEach(clustered, 'cluster', function (cluster, clusterValue, currentIndex) {
+      clusterSizes[clusterValue] = cluster.features.length;
+    });
+    biggestCluster = getLargestCluster(clustered, clusterSizes);
+    let biggestClusterCentroid = biggestCluster.features[0].properties.centroid;
+    pointsCopy = biggestCluster;
+
+    // We found our match
+    if (biggestCluster.features.length <= n) {
+      let remainingSpots = n - biggestCluster.features.length;
+      if (remainingSpots > 0) {
+        let pointsRemaining = getRemainingPoints(points, biggestCluster);
+        // Might result in slightly odd arrangement if outliers
+        let sortedPointsRemaining = sortByDistanceToCentroid(biggestClusterCentroid, pointsRemaining);
+        for (let i = 0; i < remainingSpots; i++) {
+          biggestCluster.features.push(sortedPointsRemaining.features[i]);
+        }
+
+        return biggestCluster;
+      }
+    }
+  }
+
+  return points;
 }
 
 // Parse a feature collection and create object with clusters mapped to items
