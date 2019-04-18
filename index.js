@@ -22,6 +22,7 @@ require('./routes/user_routes')(app);
 require('./routes/arrangement_routes')(app);
 require('./routes/health_routes')(app);
 
+
 app.get('/docs', (request, response) => {
   response.sendFile(path.join(__dirname, '/doc/index.html'));
 });
