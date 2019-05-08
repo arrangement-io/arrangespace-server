@@ -1,6 +1,7 @@
 'use strict';
 const helmet = require('helmet');
 const express = require('express');
+var cors = require('cors')
 const app = express();
 module.exports = app;
 const bodyParser = require('body-parser');
@@ -10,6 +11,7 @@ const core = require('./api/internal/core');
 let path = require('path');
 let db = require('./db/database_mongo');
 
+app.use(cors())
 app.use(log.requestLogger);
 
 app.use(bodyParser.urlencoded({ extended: true }));
