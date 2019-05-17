@@ -73,7 +73,7 @@ exports.renderSnapshot = function (snapshot, containers, items) {
   output.push(sider);
 
   // Arrangements with only a single snapshot will not have snapshotContainer defined
-  if (snapshot.snapshotContainer) {
+  if (snapshot.snapshotContainers) {
     for (let container of snapshot.snapshotContainers) {
       let containerAndItems = ['', this.retrieveName(container._id, containers)];
 
