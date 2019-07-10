@@ -70,7 +70,17 @@ exports.renderArrangement = function (arrangement) {
 exports.renderSnapshot = function (snapshot, containers, items) {
   let output = [];
   let sider = [snapshot.name, 'car', 'driver', 'passenger'];
+
+  // Builds an index sider depending on the size of the largest container
+  const sizeOfLargestContainer = Math.max.apply(Math, containers.map(function(container) {return container.size;}))
+  let indexSider = ["", ""];
+
+  for (let i = 1; i <= sizeOfLargestContainer; i++) {
+    indexSider.push(i);
+  }
+  
   output.push(sider);
+  output.push(indexSider);
 
   // Arrangements with only a single snapshot will not have snapshotContainer defined
   if (snapshot.snapshotContainers) {
