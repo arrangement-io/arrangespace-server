@@ -126,18 +126,19 @@ exports.validatePostRequest = function (model, request) {
           return;
         }
 
+        // TODO: Check for authorization if private, if public skip verification
         // Authorization checks after validation
-        if (model.collectionName === 'arrangement') {
-          if (data.owner !== request.googleId) {
-            this.sendFailure(401, 'Unauthorized', 'Wrong credentials', resolve);
-            return;
-          }
-        } else {
-          if (data.user_data.googleId !== request.googleId) {
-            this.sendFailure(401, 'Unauthorized', 'Wrong credentials', resolve);
-            return;
-          }
-        }
+        // if (model.collectionName === 'arrangement') {
+        //   if (data.owner !== request.googleId) {
+        //     this.sendFailure(401, 'Unauthorized', 'Wrong credentials', resolve);
+        //     return;
+        //   }
+        // } else {
+        //   if (data.user_data.googleId !== request.googleId) {
+        //     this.sendFailure(401, 'Unauthorized', 'Wrong credentials', resolve);
+        //     return;
+        //   }
+        // }
 
         resolve({});
       })();
