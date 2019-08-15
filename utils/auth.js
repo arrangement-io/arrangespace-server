@@ -3,6 +3,7 @@ const { GOOGLE_CLIENT_ID } = process.env;
 const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 const core = require('../api/internal/core');
 const WHITELIST_DOMAINS = ['gpmail.org'];
+const WHITELIST_EMAILS = ['gideon.chia@gmail.com', 'fredkimdesign@gmail.com']
 
 module.exports = async function (request, response, next) {
   try {
@@ -28,8 +29,9 @@ module.exports = async function (request, response, next) {
       const payload = ticket.getPayload();
       const googleId = payload['sub'];
       const domain = payload['hd'];
+      const email = payload['email'];
 
-      if (WHITELIST_DOMAINS.indexOf(domain) === -1) {
+      if (WHITELIST_DOMAINS.indexOf(domain) === -1 && WHITELIST_EMAILS.indexOf(email) === -1) {
         core.sendUnauthorizedResponse('Invalid domain', response);
         return;
       }
