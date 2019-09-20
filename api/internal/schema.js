@@ -17,9 +17,9 @@ const userSchema = Joi.object({
 
 const arrangementSchema = Joi.object({
   _id: Joi.string().required(),
-  containers: Joi.array().required(),
+  containers: Joi.object().required(),
   is_deleted: Joi.boolean().required(),
-  items: Joi.array().required(),
+  items: Joi.object().required(),
   modified_timestamp: Joi.number().required(),
   name: Joi.string().required(),
   owner: Joi.string().required(),
