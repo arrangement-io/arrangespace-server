@@ -3,6 +3,10 @@ var { logger } = require('../../utils/logger');
 
 let core = this;
 
+exports.cloneObject = function (obj) {
+  return JSON.parse(JSON.stringify(obj));
+};
+
 exports.log = function (message) {
   logger.info(message);
 };

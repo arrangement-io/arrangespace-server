@@ -7,7 +7,7 @@ const WHITELIST_EMAILS = ['kuo-ching_chiu@berkeley.edu', 'gideon.chia@gmail.com'
 
 module.exports = async function (request, response, next) {
   try {
-    if (request.path !== '/health') {
+    if (request.path !== '/health' && request.path !== '/clusters') {
       const { authorization } = request.headers;
       if (!authorization) {
         core.sendUnauthorizedResponse('You must send an Authorization header', response);
