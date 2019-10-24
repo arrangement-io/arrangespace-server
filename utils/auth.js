@@ -3,7 +3,7 @@ const { GOOGLE_CLIENT_ID } = process.env;
 const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 const core = require('../api/internal/core');
 const WHITELIST_DOMAINS = ['gpmail.org'];
-const WHITELIST_EMAILS = ['kuo-ching_chiu@berkeley.edu', 'gideon.chia@gmail.com', 'fredkimdesign@gmail.com']
+const WHITELIST_EMAILS = ['kuo-ching_chiu@berkeley.edu', 'gideon.chia@gmail.com', 'fredkimdesign@gmail.com', 'haohowardguan@gmail.com'];
 
 module.exports = async function (request, response, next) {
   try {
