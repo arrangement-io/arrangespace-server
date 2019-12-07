@@ -4,6 +4,9 @@ module.exports = function (app) {
   app.route('/users')
     .get(userController.getUsers);
 
+  app.route('/user')
+    .get(userController.getSelf);
+
   app.route('/users/:id')
     .get(userController.getUser);
 

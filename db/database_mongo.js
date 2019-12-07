@@ -24,6 +24,14 @@ exports.connect = async function () {
   }
 };
 
+exports.createUserByGoogleId = function (payload) {
+  return new Promise(resolve => {
+    mCore.updateResourceByGoogleId(User, payload).then(results => {
+      resolve(results);
+    });
+  });
+};
+
 exports.createUser = function (payload, request, response) {
   return new Promise(resolve => {
     mCore.updateResource(User, payload, 'googleId', request).then(results => {
