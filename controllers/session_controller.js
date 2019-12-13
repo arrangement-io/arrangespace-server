@@ -10,7 +10,9 @@ exports.logIn = function (request, response) {
 };
 
 exports.logOut = function (request, response) {
-  api.logOut(request).then(results => {
-    core.sendResponse(results, response);
+  request.session.destroy(function (e) {
+    request.logout();
+    response.clearCookie('connect.sid');
+    return response.json({ status: 'LOGGED OUT' });
   });
 };

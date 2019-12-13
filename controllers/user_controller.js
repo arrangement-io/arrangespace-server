@@ -15,6 +15,10 @@ exports.getUser = function (request, response) {
   });
 };
 
+exports.getSelf = function (request, response) {
+  core.sendResponse(request.user, response);
+};
+
 exports.getUserArrangements = function (request, response) {
   let userId = request.params.id;
 

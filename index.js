@@ -1,7 +1,7 @@
 'use strict';
 const helmet = require('helmet');
 const express = require('express');
-var cors = require('cors')
+var cors = require('cors');
 const app = express();
 module.exports = app;
 const bodyParser = require('body-parser');
@@ -10,8 +10,45 @@ const log = require('./utils/logger');
 const core = require('./api/internal/core');
 let path = require('path');
 let db = require('./db/database_mongo');
+const session = require('express-session');
+const passport = require('passport');
+require('./passport_init');
 
-app.use(cors())
+const ALLOWED_ORIGINS = ['http://localhost:3000', 'http://localhost:3001', 'https://arrange.space'];
+
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: true,
+  saveUninitialized: true
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+app.get('/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: 'back' }),
+  function (req, res) {
+    core.log(`User authenticated ${req.user.googleId}`);
+    res.redirect('back');
+  });
+
+app.use(cors({
+  credentials: true,
+  origin: function (origin, callback) {
+    // allow requests with no origin
+    // (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (ALLOWED_ORIGINS.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not ' +
+                'allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  }
+}));
+
 app.use(log.requestLogger);
 
 app.use(bodyParser.urlencoded({ extended: true }));
