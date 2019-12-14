@@ -34,13 +34,26 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.get('/auth/google',
+  function (req, res, next) {
+    if (req.session.bounceTo) { // already have a bounce destination
+      return next();
+    } else {
+      if (req.query['bounce']) {
+        req.session.bounceTo = req.query['bounce'];
+      } else { // no explicit destination, use referer or homepage
+        req.session.bounceTo = req.header('Referer') || '/';
+      }
+      return next();
+    };
+  },
   passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: 'back' }),
   function (req, res) {
     core.log(`User authenticated ${req.user.googleId}`);
-    res.redirect('back');
+    res.redirect(req.session.bounceTo || '/');
+    delete req.session.bounceTo;
   });
 
 app.use(cors({
