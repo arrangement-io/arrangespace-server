@@ -3,7 +3,7 @@ const passport = require('passport');
 let db = require('./db/database_mongo');
 
 const WHITELIST_DOMAINS = ['gpmail.org'];
-const WHITELIST_EMAILS = ['kuo-ching_chiu@berkeley.edu', 'gideon.chia@gmail.com', 'fredkimdesign@gmail.com', 'haohowardguan@gmail.com'];
+const WHITELIST_EMAILS = ['kuo-ching_chiu@berkeley.edu', 'gideon.chia@gmail.com', 'fredkimdesign@gmail.com', 'haohowardguan@gmail.com', 'dkinder.is.me@gmail.com'];
 
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
