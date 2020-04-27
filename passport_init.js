@@ -3,7 +3,23 @@ const passport = require('passport');
 let db = require('./db/database_mongo');
 
 const WHITELIST_DOMAINS = ['gpmail.org'];
-const WHITELIST_EMAILS = ['kuo-ching_chiu@berkeley.edu', 'gideon.chia@gmail.com', 'fredkimdesign@gmail.com', 'haohowardguan@gmail.com', 'dkinder.is.me@gmail.com'];
+const WHITELIST_EMAILS = [
+  'kuo-ching_chiu@berkeley.edu',
+  'gideon.chia@gmail.com',
+  'fredkimdesign@gmail.com',
+  'haohowardguan@gmail.com',
+  'dkinder.is.me@gmail.com',
+  'shanrauf@berkeley.edu',
+  'alexandernewman@berkeley.edu',
+  'richardruan@berkeley.edu',
+  'esu@berkeley.edu',
+  'daniel.yoon35@gmail.com',
+  'jjlinucb@berkeley.edu',
+  'peter.trost@berkeley.edu',
+  'chibuzorobiorah@berkeley.edu',
+  'cindyllo616@gmail.com',
+  'jamesdangyellow@gmail.com',
+  'wu.cherry@berkeley.edu'];
 
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
