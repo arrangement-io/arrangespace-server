@@ -19,6 +19,7 @@ const WHITELIST_EMAILS = [
   'chibuzorobiorah@berkeley.edu',
   'cindyllo616@gmail.com',
   'jamesdangyellow@gmail.com',
+  'johnangeles@berkeley.edu',
   'wu.cherry@berkeley.edu'];
 
 passport.use(new GoogleStrategy({
