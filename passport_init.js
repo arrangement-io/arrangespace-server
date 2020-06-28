@@ -10,16 +10,13 @@ const WHITELIST_EMAILS = [
   'haohowardguan@gmail.com',
   'dkinder.is.me@gmail.com',
   'shanrauf@berkeley.edu',
-  'alexandernewman@berkeley.edu',
   'richardruan@berkeley.edu',
   'esu@berkeley.edu',
-  'daniel.yoon35@gmail.com',
-  'jjlinucb@berkeley.edu',
   'peter.trost@berkeley.edu',
   'chibuzorobiorah@berkeley.edu',
   'cindyllo616@gmail.com',
   'jamesdangyellow@gmail.com',
-  'johnangeles@berkeley.edu',
+  'mjlikre@gmail.com',
   'wu.cherry@berkeley.edu'];
 
 passport.use(new GoogleStrategy({
