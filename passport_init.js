@@ -17,7 +17,9 @@ const WHITELIST_EMAILS = [
   'cindyllo616@gmail.com',
   'jamesdangyellow@gmail.com',
   'mjlikre@gmail.com',
-  'wu.cherry@berkeley.edu'];
+  'wu.cherry@berkeley.edu',
+  'jyen83@gmail.com',
+  'jenny.chen@gpmail.org'];
 
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
