@@ -1,6 +1,7 @@
 {
     "version": 2,
     "name": "arrangespace-server",
+    "alias": ["arrangespace-server.now.sh", "arrangespace-server.gideon.now.sh"],
     "builds": [
         { "src": "index.js", "use": "@now/node-server" }
     ],
