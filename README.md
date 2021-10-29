@@ -1,4 +1,17 @@
-# Development
+# Backend
+
+## Table of Contents
+
+For the Backend-end side, we use JavaScript and Node JS and MongoDB. This project also support NodeJS version. See Development Set Up
+
+
+### Authors and Contributors
+- [David Wosk](https://www.linkedin.com/in/david-wosk-90613154/) - Full Stack
+- [Gideon Chia](https://www.linkedin.com/in/gideon-chia-8573bb30/) - Full Stack
+- [Jeff Chiu](https://www.linkedin.com/in/jeffchiu2022) - Full Stack
+
+
+# Development Setup
 
 ```shell
 $ yarn install
@@ -33,11 +46,6 @@ $ mongoimport -d test -c arrangement ./test/seed/arrangement_seed.json
 $ npm test
 ```
 
-# Deploy to Now
+# Deploy to NextJS
 
-```shell
-$ now secrets add mongodb-url "mongo-url-here"
-$ now secrets add mongodb-name "db-name-here"
-$ now secrets add google-client-id "client-id-here"
-$ now
-```
+
