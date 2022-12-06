@@ -7,7 +7,7 @@
     "connect-mongodb-session": "^2.2.0",
     "convert-array-to-csv": "^1.0.5",
     "cors": "^2.8.5",
-    "express": "^4.16.4",
+    "express": "^4.18.2",
     "express-session": "^1.11.3",
     "express-winston": "^3.1.0",
     "google-auth-library": "^3.1.2",
